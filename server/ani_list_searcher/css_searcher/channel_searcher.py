@@ -1,0 +1,103 @@
+from ani_list_searcher.css_searcher.utils import request, to_text
+import urllib
+
+
+class IndexGroupedParser:
+    def __init__(
+        self,
+        selectChannelNames,
+        selectEpisodeLists,
+        selectEpisodesFromList,
+        selectEpisodeLinksFromList,
+        **kwargs,
+    ):
+        self.selectChannelNames = selectChannelNames
+        self.selectEpisodeLists = selectEpisodeLists
+        self.selectEpisodesFromList = selectEpisodesFromList
+        self.selectEpisodeLinksFromList = selectEpisodeLinksFromList
+
+    def parse_episode_list(self, src, list):
+        episodes_tag = [i for i in list.select(self.selectEpisodesFromList)]
+        if self.selectEpisodeLinksFromList:
+            episode_links = [
+                i["href"]
+                for i in list.select(self.selectEpisodeLinksFromList)
+                if i.has_attr("href") and i["href"] != ""
+            ]
+        else:
+            episode_links = []
+        result = []
+        for i in range(len(episodes_tag)):
+            result.append(
+                {
+                    "episode": to_text(episodes_tag[i]),
+                    "episode_link": urllib.parse.urljoin(
+                        src,
+                        (
+                            episode_links[i]
+                            if i < len(episode_links)
+                            else episodes_tag[i]["href"]
+                        ),
+                    ),
+                }
+            )
+
+        if len(result) == 0:
+            raise FileNotFoundError(f"No Episode Result")
+        return result
+
+    def parse(self, src, soup):
+        channel_names = [to_text(i) for i in soup.select(self.selectChannelNames)]
+        episode_lists = [
+            self.parse_episode_list(src, i)
+            for i in soup.select(self.selectEpisodeLists)
+        ]
+        return [
+            {"name": name, "episodes": list}
+            for name, list in zip(channel_names, episode_lists)
+        ]
+
+
+class UnknownParser:
+    def __init__(self, type):
+        self.type = type
+
+    def parse(self, src, soup):
+        raise ValueError(f"Unknown channel parser: {self.type}")
+
+
+class ChannelSearcher:
+    def __init__(self, searchConfig):
+        if searchConfig["channelFormatId"] == "index-grouped":
+            self.parser = IndexGroupedParser(
+                **searchConfig["selectorChannelFormatFlattened"]
+            )
+        else:
+            self.parser = UnknownParser(searchConfig["channelFormatId"])
+
+    async def search(self, session, url):
+        soup = await request(session, url)
+        result = self.parser.parse(url, soup)
+        return result
+
+
+if __name__ == "__main__":
+    import requests
+    import json
+    import asyncio
+    import aiohttp
+
+    config = json.loads(requests.get("https://sub.creamycake.org/v1/css1.json").text)
+    searcher = ChannelSearcher(
+        config["exportedMediaSourceDataList"]["mediaSources"][0]["arguments"][
+            "searchConfig"
+        ]
+    )
+
+    async def run():
+        async with aiohttp.ClientSession() as session:
+            return await searcher.search(
+                session, "https://anime.girigirilove.com/GV26626/"
+            )
+
+    print(asyncio.run(run()))
