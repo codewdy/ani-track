@@ -1,0 +1,58 @@
+<template>
+    <n-layout-sider bordered collapse-mode="width" :collapsed-width="64" :width="240" :collapsed="collapsed"
+        show-trigger @collapse="collapsed = true" @expand="collapsed = false">
+        <n-menu :collapsed="collapsed" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions"
+            :expand-icon="expandIcon" :value="value()" :default-expanded-keys="['anime-view']" />
+
+    </n-layout-sider>
+</template>
+<script setup>
+
+import { NMenu, NIcon, NLayoutSider, NBadge } from 'naive-ui'
+import { ref, h, computed } from 'vue'
+import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline } from '@vicons/ionicons5'
+
+
+import { RouterLink, useRoute } from 'vue-router'
+import { animeState } from '@/common_state.js'
+
+
+const route = useRoute()
+
+function createItem(to, v, icon) {
+    return {
+        label: () => h(RouterLink, { to: to }, v),
+        key: to,
+        icon: () => h(NIcon, null, { default: () => h(icon) })
+    }
+}
+
+function createAnimeItem(item) {
+    return {
+        label: () => h(RouterLink, { to: "/anime-view/" + item.id }, item.name),
+        key: "/anime-view/" + item.id,
+        icon: () => h(NBadge, { value: item.downloaded - item.watched }, h(NIcon, null, { default: () => h(CaretForwardCircleOutline) }))
+    }
+}
+
+const menuOptions = computed(() => [
+    createItem('/wdy', () => '动画列表', HomeOutline),
+    createItem('/config', '添加动画', SettingsOutline),
+    {
+        label: '动画',
+        key: 'anime-view',
+        icon: () => h(NIcon, null, { default: () => h(LayersOutline) }),
+        children: animeState.anime.map(createAnimeItem)
+    }
+])
+const collapsed = ref(false)
+function expandIcon() {
+    return h(NIcon, null, { default: () => h(CaretDownOutline) })
+}
+function value() {
+    return route.path
+}
+// https://lain.bgm.tv/r/400/pic/cover/l/7f/1c/526973_zE0vy.jpg
+</script>
+
+<style scoped></style>
