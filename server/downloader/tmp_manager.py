@@ -1,5 +1,6 @@
 import uuid
 import os
+from downloader.utils import run_cmd
 
 class TmpManager:
     def __init__(self, root_dir, auto_remove=True):
@@ -13,7 +14,7 @@ class TmpManager:
         self.allocated_files.append(path)
         return path
 
-    def start(self):
+    async def start(self):
         while True:
             name = str(uuid.uuid4())
             path = os.path.join(self.root_dir, name)
@@ -24,23 +25,23 @@ class TmpManager:
             self.dir = path
             return
 
-    def close(self):
+    async def close(self):
         if self.auto_remove:
             try:
-                os.rmdir(self.dir)
-            except OSError:
+                await run_cmd("rm", "-rf", self.dir)
+            except ValueError:
                 for file in self.allocated_files:
                     try:
-                        os.remove(file)
-                    except OSError:
+                        await run_cmd("rm", "-rf", file)
+                    except ValueError:
                         pass
 
     async def __aenter__(self):
-        self.start()
+        await self.start()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+        await self.close()
 
 if __name__ == "__main__":
     import asyncio

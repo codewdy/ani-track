@@ -1,6 +1,7 @@
 from downloader.tmp_manager import TmpManager
 from downloader.download_tracker import DownloadTracker
 from downloader.simple_downloader import SimpleDownloader
+from downloader.utils import run_cmd
 import urllib
 import re
 import asyncio
@@ -62,15 +63,13 @@ class M3U8Downloader:
             print(newlines)
         with open(src_m3u8, "w") as f:
             f.writelines(newlines)
-        ffmpegcmd = await asyncio.create_subprocess_exec(
+        await run_cmd(
             "ffmpeg", "-y", "-allowed_extensions", "ALL", "-i", src_m3u8, "-acodec", "copy", "-vcodec", "copy",
              "-bsf:a", "aac_adtstoasc", dst)
-        await ffmpegcmd.wait()
-        if ffmpegcmd.returncode != 0:
-            raise ValueError("ffmpeg failed")
 
     async def run(self):
         async with TmpManager(self.tmp_dir) as tmp:
+            tmp.dir = "/tmp/test/85ec04af-83f2-4bc6-bf06-d283cd21b0b8"
             self.status = "downloading m3u8 meta"
             src_m3u8_file = tmp.allocate_file("src.m3u8")
             urls = await self.download_meta(src_m3u8_file)
@@ -85,11 +84,8 @@ class M3U8Downloader:
             output_file = tmp.allocate_file("output.mp4")
             await self.ffmpeg(src_m3u8_file, fragments, output_file)
             self.status = "copy result"
-            cpcmd = await asyncio.create_subprocess_exec("cp", output_file, self.dst + ".tmp")
-            await cpcmd.wait()
-            if cpcmd.returncode != 0:
-                raise ValueError("cp failed")
-            os.rename(self.dst + ".tmp", self.dst)
+            await run_cmd("cp", output_file, self.dst + ".tmp")
+            await run_cmd("mv", self.dst + ".tmp", self.dst)
             self.status = "done"
 
 
@@ -104,7 +100,11 @@ if __name__ == "__main__":
     from downloader.download_tracker import DownloadTracker
     async def test():
         async with aiohttp.ClientSession() as session:
-            downloader = M3U8Downloader(session, "https://m3u8.girigirilove.com/zijian/oldanime/2025/07/cht/GrandBlueS2CHT/01/playlist.m3u8", "/tmp/oceans.mp4", "/tmp/test")
+            downloader = M3U8Downloader(
+                session, 
+                "https://m3u8.girigirilove.com/zijian/oldanime/2025/07/cht/GrandBlueS2CHT/01/playlist.m3u8", 
+                "/tmp/oceans-2.mp4", 
+                "/tmp/test")
             task = asyncio.create_task(downloader.run())
             while True:
                 await asyncio.sleep(1)
