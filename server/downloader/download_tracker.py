@@ -40,36 +40,36 @@ class SpeedTracker:
             self._records.pop(0)
 
 class SizeTracker:
-    def __init__(self, slice_count):
-        self._slices = []
-        self._slice_count = slice_count
-        self._slice_downloaded = 0
+    def __init__(self, fragment_count):
+        self._fragments = []
+        self._fragment_count = fragment_count
+        self._fragment_downloaded = 0
 
-    def add_slice(self, slice_bytes):
-        if self._slices:
-            self._slices[-1] = self._slice_downloaded
-        self._slices.append(slice_bytes)
-        self._slice_downloaded = 0
+    def add_fragment(self, fragment_bytes):
+        if self._fragments:
+            self._fragments[-1] = self._fragment_downloaded
+        self._fragments.append(fragment_bytes)
+        self._fragment_downloaded = 0
 
     def add_bytes_downloaded(self, bytes_downloaded):
-        self._slice_downloaded += bytes_downloaded
+        self._fragment_downloaded += bytes_downloaded
 
     def total_size(self):
-        if self._slices[-1] is None:
-            if len(self._slices) > 1:
-                return self._slice_count * sum(self._slices[:-1]) / (len(self._slices) - 1)
+        if self._fragments[-1] is None:
+            if len(self._fragments) > 1:
+                return self._fragment_count * sum(self._fragments[:-1]) / (len(self._fragments) - 1)
             else:
                 return None
-        return self._slice_count * sum(self._slices) / len(self._slices)
+        return self._fragment_count * sum(self._fragments) / len(self._fragments)
 
     def total_downloaded(self):
-        return sum(self._slices[:-1]) + self._slice_downloaded
+        return sum(self._fragments[:-1]) + self._fragment_downloaded
 
     def is_expected_size(self):
-        return self._slice_count > len(self._slices) or self._slices[-1] is None
+        return self._fragment_count > len(self._fragments) or self._fragments[-1] is None
 
     def human_readable_size(self):
-        if len(self._slices) == 0:
+        if len(self._fragments) == 0:
             return f"0 / Nan 0%"
         total_size = self.total_size()
         total_downloaded = self.total_downloaded()
@@ -81,12 +81,12 @@ class SizeTracker:
             f"{' (expected)' if is_expected_size else ''}"
 
 class DownloadTracker:
-    def __init__(self, slice_count):
+    def __init__(self, fragment_count):
         self._speed_tracker = SpeedTracker()
-        self._size_tracker = SizeTracker(slice_count)
+        self._size_tracker = SizeTracker(fragment_count)
 
-    def add_slice(self, slice_bytes):
-        self._size_tracker.add_slice(slice_bytes)
+    def add_fragment(self, fragment_bytes):
+        self._size_tracker.add_fragment(fragment_bytes)
 
     def add_bytes_downloaded(self, bytes_downloaded):
         self._speed_tracker.add_bytes_downloaded(bytes_downloaded)
@@ -98,17 +98,17 @@ class DownloadTracker:
     def human_readable_size(self):
         return self._size_tracker.human_readable_size()
 
-    def human_readable(self):
+    def human_readable_status(self):
         return f"Speed: {self.human_readable_speed()} Downloaded: {self.human_readable_size()}"
 
 if __name__ == "__main__":
     tracker = DownloadTracker(1)
-    tracker.add_slice(1000)
+    tracker.add_fragment(1000)
     tracker.add_bytes_downloaded(100)
-    print(tracker.human_readable())
+    print(tracker.human_readable_status())
     time.sleep(1)
     tracker.add_bytes_downloaded(100)
-    print(tracker.human_readable())
+    print(tracker.human_readable_status())
     time.sleep(1)
     tracker.add_bytes_downloaded(100)
-    print(tracker.human_readable())
+    print(tracker.human_readable_status())

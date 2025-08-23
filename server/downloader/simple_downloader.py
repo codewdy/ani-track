@@ -9,7 +9,7 @@ class SimpleDownloader:
         async with self.session.get(self.src) as resp:
             resp.raise_for_status()
             if self.download_tracker is not None:
-                self.download_tracker.add_slice(resp.content_length)
+                self.download_tracker.add_fragment(resp.content_length)
             with open(self.dst, "wb") as f:
                 while True:
                     chunk = await resp.content.read(1024 * 1024)
@@ -30,8 +30,8 @@ if __name__ == "__main__":
             task = asyncio.create_task(downloader.run())
             while True:
                 await asyncio.sleep(1)
-                print(download_tracker.human_readable())
+                print(download_tracker.human_readable_status())
                 if task.done():
                     break
-            print(download_tracker.human_readable())
+            print(download_tracker.human_readable_status())
     asyncio.run(test())

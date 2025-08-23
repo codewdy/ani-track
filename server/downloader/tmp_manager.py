@@ -2,10 +2,11 @@ import uuid
 import os
 
 class TmpManager:
-    def __init__(self, root_dir):
+    def __init__(self, root_dir, auto_remove=True):
         self.root_dir = root_dir
         self.dir = None
         self.allocated_files = []
+        self.auto_remove = auto_remove
 
     def allocate_file(self, name):
         path = os.path.join(self.dir, name)
@@ -24,14 +25,15 @@ class TmpManager:
             return
 
     def close(self):
-        try:
-            os.rmdir(self.dir)
-        except OSError:
-            for file in self.allocated_files:
-                try:
-                    os.remove(file)
-                except OSError:
-                    pass
+        if self.auto_remove:
+            try:
+                os.rmdir(self.dir)
+            except OSError:
+                for file in self.allocated_files:
+                    try:
+                        os.remove(file)
+                    except OSError:
+                        pass
 
     async def __aenter__(self):
         self.start()
