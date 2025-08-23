@@ -1,4 +1,4 @@
-from ani_list_searcher.searcher_list import SearcherList
+from ani_list_searcher.searcher_list import searcher_list
 import asyncio
 import aiohttp
 
@@ -24,7 +24,7 @@ class SearchFunctor:
 
 class SearchEngine:
     def __init__(self, sources):
-        self.searcher_list = SearcherList(sources, 60 * 60 * 24)
+        self.searcher_list = searcher_list()
 
     async def search(self, keyword):
         async with aiohttp.ClientSession(
@@ -33,10 +33,10 @@ class SearchEngine:
             results = await asyncio.gather(
                 *map(
                     SearchFunctor(session, keyword),
-                    await self.searcher_list.searchers(session),
+                    self.searcher_list,
                 )
             )
-
+            
         return sum(results, [])
 
 

@@ -1,4 +1,4 @@
-from ani_list_searcher.css_searcher.utils import request, to_text
+from ani_list_searcher.web_searcher.utils import request, to_text
 import urllib
 
 
