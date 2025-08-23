@@ -69,7 +69,6 @@ class M3U8Downloader:
 
     async def run(self):
         async with TmpManager(self.tmp_dir) as tmp:
-            tmp.dir = "/tmp/test/85ec04af-83f2-4bc6-bf06-d283cd21b0b8"
             self.status = "downloading m3u8 meta"
             src_m3u8_file = tmp.allocate_file("src.m3u8")
             urls = await self.download_meta(src_m3u8_file)
