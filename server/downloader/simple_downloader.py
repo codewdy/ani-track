@@ -7,7 +7,9 @@ class SimpleDownloader:
 
     async def run(self):
         async with self.session.get(self.src) as resp:
-            self.download_tracker.add_slice(resp.content_length)
+            resp.raise_for_status()
+            if self.download_tracker is not None:
+                self.download_tracker.add_slice(resp.content_length)
             with open(self.dst, "wb") as f:
                 while True:
                     chunk = await resp.content.read(1024 * 1024)
