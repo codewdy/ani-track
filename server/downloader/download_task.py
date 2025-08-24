@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Callable, Optional
 
 @dataclass
 class DownloadTask:
@@ -7,3 +7,5 @@ class DownloadTask:
     url: str
     dst: str
     meta: Any = None
+    on_finished: Optional[Callable[[], None]] = None
+    on_error: Optional[Callable[[Exception], None]] = None
