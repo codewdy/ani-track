@@ -72,6 +72,8 @@ class SizeTracker:
         self._fragment_downloaded += bytes_downloaded
 
     def total_size(self):
+        if len(self._fragments) == 0:
+            return None
         if self._fragments[-1] is None:
             if len(self._fragments) > 1:
                 return self._fragment_count * sum(self._fragments[:-1]) / (len(self._fragments) - 1)
