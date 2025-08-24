@@ -82,17 +82,14 @@ class ChannelSearcher:
 
 
 if __name__ == "__main__":
-    import requests
     import json
     import asyncio
     import aiohttp
+    from pathlib import Path
 
-    config = json.loads(requests.get("https://sub.creamycake.org/v1/css1.json").text)
-    searcher = ChannelSearcher(
-        config["exportedMediaSourceDataList"]["mediaSources"][0]["arguments"][
-            "searchConfig"
-        ]
-    )
+    with open(Path(__file__).parent / "searcher.json", "r") as f:
+        config = json.load(f)
+    searcher = ChannelSearcher(config["searchers"][0]["searchConfig"])
 
     async def run():
         async with aiohttp.ClientSession() as session:

@@ -36,15 +36,14 @@ class Searcher:
 
 
 if __name__ == "__main__":
-    import requests
     import json
     import asyncio
     import aiohttp
+    from pathlib import Path
 
-    config = json.loads(requests.get("https://sub.creamycake.org/v1/css1.json").text)
-    searcher = Searcher(
-        config["exportedMediaSourceDataList"]["mediaSources"][0]["arguments"]
-    )
+    with open(Path(__file__).parent / "searcher.json", "r") as f:
+        config = json.load(f)
+    searcher = Searcher(config["searchers"][0])
 
     async def run():
         async with aiohttp.ClientSession() as session:
