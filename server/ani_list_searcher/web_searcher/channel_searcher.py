@@ -28,17 +28,13 @@ class IndexGroupedParser:
             episode_links = []
         result = []
         for i in range(len(episodes_tag)):
+            href = episode_links[i] if i < len(episode_links) else episodes_tag[i]["href"]
+            if href == "" or href.startswith("javascript:"):
+                continue
             result.append(
                 {
                     "episode": to_text(episodes_tag[i]),
-                    "episode_link": urllib.parse.urljoin(
-                        src,
-                        (
-                            episode_links[i]
-                            if i < len(episode_links)
-                            else episodes_tag[i]["href"]
-                        ),
-                    ),
+                    "episode_link": urllib.parse.urljoin(src, href),
                 }
             )
 
