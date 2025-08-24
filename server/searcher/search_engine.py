@@ -1,4 +1,4 @@
-from ani_list_searcher.searcher_list import searcher_list
+from searcher.searcher_list import searcher_list
 import asyncio
 import aiohttp
 

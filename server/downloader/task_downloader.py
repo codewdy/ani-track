@@ -1,4 +1,4 @@
-from ani_list_searcher.searcher_list import searcher_dict
+from searcher.searcher_list import searcher_dict
 from downloader.mp4_downloader import MP4Downloader
 from downloader.m3u8_downloader import M3U8Downloader
 from context import Context

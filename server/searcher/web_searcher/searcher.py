@@ -1,6 +1,6 @@
-from ani_list_searcher.web_searcher.subject_searcher import SubjectSearcher
-from ani_list_searcher.web_searcher.channel_searcher import ChannelSearcher
-from ani_list_searcher.web_searcher.resource_searcher import ResourceSearcher
+from searcher.web_searcher.subject_searcher import SubjectSearcher
+from searcher.web_searcher.channel_searcher import ChannelSearcher
+from searcher.web_searcher.resource_searcher import ResourceSearcher
 import asyncio
 
 

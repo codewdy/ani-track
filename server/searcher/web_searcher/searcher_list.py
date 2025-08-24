@@ -1,4 +1,4 @@
-from ani_list_searcher.web_searcher.searcher import Searcher
+from searcher.web_searcher.searcher import Searcher
 import json
 from pathlib import Path
 from functools import cache
