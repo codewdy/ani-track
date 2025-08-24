@@ -38,6 +38,8 @@ class ResourceSearcher:
 
     async def search(self, url):
         rst = await RequestResourceHandler.get(url)
+        if rst is None:
+            raise ValueError(f"cannot get resource: {url}")
         return self.parser.parse(rst)
 
 if __name__ == "__main__":
