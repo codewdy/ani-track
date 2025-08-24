@@ -1,6 +1,6 @@
 from ani_list_searcher.web_searcher.subject_searcher import SubjectSearcher
 from ani_list_searcher.web_searcher.channel_searcher import ChannelSearcher
-
+from ani_list_searcher.web_searcher.resource_searcher import ResourceSearcher
 import asyncio
 
 
@@ -10,6 +10,7 @@ class Searcher:
         self.icon = config["iconUrl"]
         self.subject_searcher = SubjectSearcher(config["searchConfig"])
         self.channel_searcher = ChannelSearcher(config["searchConfig"])
+        self.resource_searcher = ResourceSearcher(config["searchConfig"])
 
     async def search(self, session, keyword):
         result = await self.subject_searcher.search(session, keyword)
@@ -27,6 +28,9 @@ class Searcher:
             subject["source"] = self.name
             subject["icon"] = self.icon
         return result
+    
+    async def search_resource(self, session, url):
+        return await self.resource_searcher.search(session, url)
 
 
 if __name__ == "__main__":
