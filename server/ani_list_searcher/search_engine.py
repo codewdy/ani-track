@@ -4,13 +4,12 @@ import aiohttp
 
 
 class SearchFunctor:
-    def __init__(self, session, keyword):
-        self.session = session
+    def __init__(self, keyword):
         self.keyword = keyword
 
     async def __call__(self, searcher):
         try:
-            return await searcher.search(self.session, self.keyword)
+            return await searcher.search(self.keyword)
 
         except Exception as e:
             return [
@@ -23,23 +22,25 @@ class SearchFunctor:
 
 
 class SearchEngine:
-    def __init__(self, sources):
+    def __init__(self):
         self.searcher_list = searcher_list()
 
     async def search(self, keyword):
-        async with aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=3)
-        ) as session:
-            results = await asyncio.gather(
-                *map(
-                    SearchFunctor(session, keyword),
-                    self.searcher_list,
-                )
+        results = await asyncio.gather(
+            *map(
+                SearchFunctor(keyword),
+                self.searcher_list,
             )
+        )
             
         return sum(results, [])
 
 
 if __name__ == "__main__":
-    search_engine = SearchEngine(["https://sub.creamycake.org/v1/css1.json"])
-    print(asyncio.run(search_engine.search("碧蓝之海")))
+    from context import Context
+
+    search_engine = SearchEngine()
+    async def run():
+        async with Context() as ctx:
+            return await search_engine.search("碧蓝之海")
+    print(asyncio.run(run()))

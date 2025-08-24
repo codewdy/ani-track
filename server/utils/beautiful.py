@@ -1,7 +1,7 @@
 import inspect
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
-
+from context import Context
 
 def get_caller_info():
     frame = inspect.currentframe().f_back.f_back
@@ -20,8 +20,8 @@ def get_caller_info():
         return f"{function_name}"
 
 
-async def request(session, url):
-    async with session.get(url) as response:
+async def request(url):
+    async with Context.client.get(url) as response:
         if response.status != 200:
             raise RuntimeError(
                 f"cannot get result status_code={response.status} caller={get_caller_info()}"

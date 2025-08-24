@@ -13,13 +13,12 @@ class Searcher:
         self.channel_searcher = ChannelSearcher(config["searchConfig"])
         self.resource_searcher = ResourceSearcher(config["searchConfig"])
 
-    async def search(self, session, keyword):
-        result = await self.subject_searcher.search(session, keyword)
+    async def search(self, keyword):
+        result = await self.subject_searcher.search(keyword)
         result = result[:5]
         channel_result = await asyncio.gather(
             *map(
                 self.channel_searcher.search,
-                [session] * len(result),
                 [i["link"] for i in result],
             )
         )
@@ -31,22 +30,22 @@ class Searcher:
             subject["icon"] = self.icon
         return result
     
-    async def search_resource(self, browser, url):
-        return await self.resource_searcher.search(browser, url)
+    async def search_resource(self, url):
+        return await self.resource_searcher.search(url)
 
 
 if __name__ == "__main__":
     import json
     import asyncio
-    import aiohttp
     from pathlib import Path
+    from context import Context
 
     with open(Path(__file__).parent / "searcher.json", "r") as f:
         config = json.load(f)
     searcher = Searcher(config["searchers"][0])
 
     async def run():
-        async with aiohttp.ClientSession() as session:
-            return await searcher.search(session, "碧蓝之海")
+        async with Context() as ctx:
+            return await searcher.search("碧蓝之海")
 
     print(asyncio.run(run()))

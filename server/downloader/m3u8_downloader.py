@@ -1,18 +1,15 @@
-from downloader.tmp_manager import TmpManager
 from downloader.download_tracker import DownloadTracker
 from downloader.simple_downloader import SimpleDownloader
-from downloader.utils import run_cmd
+from utils.run_cmd import run_cmd
 import urllib
 import re
 import asyncio
-import os
+from context import Context
 
 class M3U8Downloader:
-    def __init__(self, session, src, dst, tmp_dir):
-        self.session = session
+    def __init__(self, src, dst):
         self.src = src
         self.dst = dst
-        self.tmp_dir = tmp_dir
         self.status = "preparing"
 
     def select_sub_list(self, lines):
@@ -32,7 +29,7 @@ class M3U8Downloader:
         return rst[1]
 
     async def download_meta(self, file):
-        await SimpleDownloader(self.session, self.src, file).run()
+        await SimpleDownloader(self.src, file).run()
         with open(file, "r") as f:
             lines = f.readlines()
         lines = [line.strip() for line in lines]
@@ -68,7 +65,7 @@ class M3U8Downloader:
              "-bsf:a", "aac_adtstoasc", dst)
 
     async def run(self):
-        async with TmpManager(self.tmp_dir) as tmp:
+        async with Context.tempdir() as tmp:
             self.status = "downloading m3u8 meta"
             src_m3u8_file = tmp.allocate_file("src.m3u8")
             urls = await self.download_meta(src_m3u8_file)
@@ -78,7 +75,7 @@ class M3U8Downloader:
             for i, url in enumerate(urls):
                 fn = tmp.allocate_file(f"fragment_{i}.ts")
                 fragments.append(fn)
-                await SimpleDownloader(self.session, url, fn, self.download_tracker).run()
+                await SimpleDownloader(url, fn, self.download_tracker).run()
             self.status = "running ffmpeg"
             output_file = tmp.allocate_file("output.mp4")
             await self.ffmpeg(src_m3u8_file, fragments, output_file)
@@ -98,12 +95,10 @@ if __name__ == "__main__":
     import aiohttp
     from downloader.download_tracker import DownloadTracker
     async def test():
-        async with aiohttp.ClientSession() as session:
+        async with Context() as ctx:
             downloader = M3U8Downloader(
-                session, 
                 "https://m3u8.girigirilove.com/zijian/oldanime/2025/07/cht/GrandBlueS2CHT/01/playlist.m3u8", 
-                "/tmp/oceans-2.mp4", 
-                "/tmp/test")
+                "/tmp/oceans-2.mp4")
             task = asyncio.create_task(downloader.run())
             while True:
                 await asyncio.sleep(1)

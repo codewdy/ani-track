@@ -1,4 +1,4 @@
-from ani_list_searcher.web_searcher.utils import request, to_text
+from utils.beautiful import request, to_text
 import urllib
 
 
@@ -65,24 +65,24 @@ class SubjectSearcher:
     def request_url(self, query):
         return self.searchUrl.format(keyword=urllib.parse.quote(query))
 
-    async def search(self, session, query):
+    async def search(self, query):
         request_url = self.request_url(query)
-        soup = await request(session, request_url)
+        soup = await request(request_url)
         return self.parser.parse(request_url, soup)
 
 
 if __name__ == "__main__":
     import json
     import asyncio
-    import aiohttp
     from pathlib import Path
+    from context import Context
 
     with open(Path(__file__).parent / "searcher.json", "r") as f:
         config = json.load(f)
     searcher = SubjectSearcher(config["searchers"][0]["searchConfig"])
 
     async def run():
-        async with aiohttp.ClientSession() as session:
-            return await searcher.search(session, "碧蓝之海")
+        async with Context() as ctx:
+            return await searcher.search("碧蓝之海")
 
     print(asyncio.run(run()))

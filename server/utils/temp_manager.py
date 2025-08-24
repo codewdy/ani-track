@@ -1,13 +1,13 @@
 import uuid
 import os
-from downloader.utils import run_cmd
+from utils.run_cmd import run_cmd
 
-class TmpManager:
-    def __init__(self, root_dir, auto_remove=True):
-        self.root_dir = root_dir
+class TempManager:
+    def __init__(self, temp_dir, auto_remove=True):
         self.dir = None
         self.allocated_files = []
         self.auto_remove = auto_remove
+        self.temp_dir = temp_dir
 
     def allocate_file(self, name):
         path = os.path.join(self.dir, name)
@@ -17,7 +17,7 @@ class TmpManager:
     async def start(self):
         while True:
             name = str(uuid.uuid4())
-            path = os.path.join(self.root_dir, name)
+            path = os.path.join(self.temp_dir, name)
             try:
                 os.makedirs(path)
             except FileExistsError:
@@ -46,6 +46,6 @@ class TmpManager:
 if __name__ == "__main__":
     import asyncio
     async def test():
-        async with TmpManager("/tmp/test") as manager:
+        async with TempManager() as manager:
             print(manager.allocate_file("test.txt"))
     asyncio.run(test())

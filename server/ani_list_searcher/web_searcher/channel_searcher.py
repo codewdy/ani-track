@@ -1,4 +1,4 @@
-from ani_list_searcher.web_searcher.utils import request, to_text
+from utils.beautiful import request, to_text
 import urllib
 
 
@@ -75,8 +75,8 @@ class ChannelSearcher:
         else:
             self.parser = UnknownParser(searchConfig["channelFormatId"])
 
-    async def search(self, session, url):
-        soup = await request(session, url)
+    async def search(self, url):
+        soup = await request(url)
         result = self.parser.parse(url, soup)
         return result
 
@@ -84,17 +84,17 @@ class ChannelSearcher:
 if __name__ == "__main__":
     import json
     import asyncio
-    import aiohttp
     from pathlib import Path
+    from context import Context
 
     with open(Path(__file__).parent / "searcher.json", "r") as f:
         config = json.load(f)
     searcher = ChannelSearcher(config["searchers"][0]["searchConfig"])
 
     async def run():
-        async with aiohttp.ClientSession() as session:
+        async with Context() as ctx:
             return await searcher.search(
-                session, "https://anime.girigirilove.com/GV26626/"
+                "https://anime.girigirilove.com/GV26626/"
             )
 
     print(asyncio.run(run()))
