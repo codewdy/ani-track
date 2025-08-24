@@ -13,7 +13,7 @@ class Searcher:
 
     async def search(self, session, keyword):
         result = await self.subject_searcher.search(session, keyword)
-        result = result[:3]
+        result = result[:5]
         channel_result = await asyncio.gather(
             *map(
                 self.channel_searcher.search,
