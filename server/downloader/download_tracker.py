@@ -1,4 +1,5 @@
 import time
+import datetime
 
 def _human_readable_size(byte_count):
     if byte_count < 1024:
@@ -9,6 +10,9 @@ def _human_readable_size(byte_count):
         return f"{byte_count / 1024 / 1024:.2f} MB"
     else:
         return f"{byte_count / 1024 / 1024 / 1024:.2f} GB"
+
+def _human_readable_eta(eta):
+    return str(datetime.timedelta(seconds=int(eta)))
 
 class SpeedTracker:
     def __init__(self):
@@ -38,6 +42,19 @@ class SpeedTracker:
         cutoff_time = current_time - self._window_size
         while self._records and self._records[0][0] < cutoff_time:
             self._records.pop(0)
+    
+    def speed(self):
+        self._clean_old_records()
+        if not self._records:
+            return 0
+
+        if len(self._records) == 1:
+            return self._records[0][1] / self._window_size
+
+        total_bytes = sum(record[1] for record in self._records[1:])
+        time_span = self._records[-1][0] - self._records[0][0]
+
+        return total_bytes / time_span
 
 class SizeTracker:
     def __init__(self, fragment_count):
@@ -64,6 +81,12 @@ class SizeTracker:
 
     def total_downloaded(self):
         return sum(self._fragments[:-1]) + self._fragment_downloaded
+    
+    def remain_size(self):
+        total_size = self.total_size()
+        if total_size is None:
+            return None
+        return total_size - self.total_downloaded()
 
     def is_expected_size(self):
         return self._fragment_count > len(self._fragments) or self._fragments[-1] is None
@@ -97,9 +120,18 @@ class DownloadTracker:
 
     def human_readable_size(self):
         return self._size_tracker.human_readable_size()
+    
+    def human_readable_eta(self):
+        remain_size = self._size_tracker.remain_size()
+        if remain_size is None:
+            return "Nan"
+        speed = self._speed_tracker.speed()
+        if speed == 0:
+            return "Inf"
+        return _human_readable_eta(remain_size / speed)
 
     def human_readable_status(self):
-        return f"Speed: {self.human_readable_speed()} Downloaded: {self.human_readable_size()}"
+        return f"Speed: {self.human_readable_speed()} Downloaded: {self.human_readable_size()} ETA: {self.human_readable_eta()}"
 
 if __name__ == "__main__":
     tracker = DownloadTracker(1)
