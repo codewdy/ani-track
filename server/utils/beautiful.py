@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 from context import Context
 
+
 def get_caller_info():
     frame = inspect.currentframe().f_back.f_back
     filename = frame.f_code.co_filename

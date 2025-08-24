@@ -39,7 +39,8 @@ class AParser:
             raise FileNotFoundError(f"No Search Result")
 
         return [
-            {"name": to_text(token), "link": urllib.parse.urljoin(src, token["href"])}
+            {"name": to_text(token), "link": urllib.parse.urljoin(
+                src, token["href"])}
             for token in tokens
         ]
 
@@ -56,7 +57,8 @@ class SubjectSearcher:
     def __init__(self, searchConfig):
         self.searchUrl = searchConfig["searchUrl"]
         if searchConfig["subjectFormatId"] == "indexed":
-            self.parser = IndexedParser(**searchConfig["selectorSubjectFormatIndexed"])
+            self.parser = IndexedParser(
+                **searchConfig["selectorSubjectFormatIndexed"])
         elif searchConfig["subjectFormatId"] == "a":
             self.parser = AParser(**searchConfig["selectorSubjectFormatA"])
         else:

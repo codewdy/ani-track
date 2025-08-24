@@ -1,5 +1,6 @@
 import asyncio
 
+
 class ParallelRunner:
     def __init__(self, max_concurrent):
         self._max_concurrent = max_concurrent
@@ -7,7 +8,7 @@ class ParallelRunner:
         self._pending_task = []
         self._waiting_exit = False
         self._exit_event = asyncio.Event()
-    
+
     def submit(self, coro):
         if self._waiting_exit:
             raise RuntimeError("Cannot submit task after join")
@@ -31,24 +32,26 @@ class ParallelRunner:
         task = asyncio.create_task(coro)
         task.add_done_callback(lambda fut: self._on_task_done(task))
         return task
-    
+
     def _on_task_done(self, task):
         self._running_task.remove(task)
         self._schedule()
         if self._waiting_exit and not self._running_task:
             self._exit_event.set()
-    
+
     def _schedule(self):
         while len(self._running_task) < self._max_concurrent and self._pending_task:
             coro = self._pending_task[0]
             self._pending_task = self._pending_task[1:]
             self._running_task.append(self._create_task(coro))
 
+
 if __name__ == "__main__":
     async def test_task(name, k):
         for i in range(k):
             print(f"RUNNING: {name} {i}/{k}")
             await asyncio.sleep(1)
+
     async def test():
         runner = ParallelRunner(2)
         runner.submit(test_task("a", 2))

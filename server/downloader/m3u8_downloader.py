@@ -6,6 +6,7 @@ import re
 import asyncio
 from context import Context
 
+
 class M3U8Downloader:
     def __init__(self, src, dst):
         self.src = src
@@ -41,7 +42,8 @@ class M3U8Downloader:
                 master_playlist = True
                 break
         if master_playlist:
-            self.src = urllib.parse.urljoin(self.src, self.select_sub_list(lines))
+            self.src = urllib.parse.urljoin(
+                self.src, self.select_sub_list(lines))
             await self.download_meta()
         else:
             return [urllib.parse.urljoin(self.src, line) for line in lines if (not line.startswith("#")) and line != ""]
@@ -62,7 +64,7 @@ class M3U8Downloader:
             f.writelines(newlines)
         await run_cmd(
             "ffmpeg", "-y", "-allowed_extensions", "ALL", "-i", src_m3u8, "-acodec", "copy", "-vcodec", "copy",
-             "-bsf:a", "aac_adtstoasc", dst)
+            "-bsf:a", "aac_adtstoasc", dst)
 
     async def run(self):
         async with Context.tempdir() as tmp:
@@ -84,20 +86,21 @@ class M3U8Downloader:
             await run_cmd("mv", self.dst + ".tmp", self.dst)
             self.status = "done"
 
-
     def human_readable_status(self):
         if self.status == "downloading":
             return f"downloading: {self.download_tracker.human_readable_status()}"
         return self.status
 
+
 if __name__ == "__main__":
     import asyncio
     import aiohttp
     from downloader.download_tracker import DownloadTracker
+
     async def test():
         async with Context() as ctx:
             downloader = M3U8Downloader(
-                "https://m3u8.girigirilove.com/zijian/oldanime/2025/07/cht/GrandBlueS2CHT/01/playlist.m3u8", 
+                "https://m3u8.girigirilove.com/zijian/oldanime/2025/07/cht/GrandBlueS2CHT/01/playlist.m3u8",
                 "/tmp/oceans-2.mp4")
             task = asyncio.create_task(downloader.run())
             while True:

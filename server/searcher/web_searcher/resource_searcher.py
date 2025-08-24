@@ -3,10 +3,11 @@ from context import Context
 
 _PREFIX = [".mp4", ".m3u8"]
 
+
 class RequestResourceHandler:
     def __init__(self):
         self.result = None
-    
+
     async def handle_request(self, route):
         self.result = route.request.url
         await route.abort()
@@ -21,6 +22,7 @@ class RequestResourceHandler:
         await page.close()
         return result.result
 
+
 class ResourceParser:
     def __init__(self):
         pass
@@ -32,6 +34,7 @@ class ResourceParser:
             return query_params["url"][0]
         return url
 
+
 class ResourceSearcher:
     def __init__(self, searchConfig):
         self.parser = ResourceParser()
@@ -42,13 +45,16 @@ class ResourceSearcher:
             raise ValueError(f"cannot get resource: {url}")
         return self.parser.parse(rst)
 
+
 if __name__ == "__main__":
     import asyncio
     searcher = ResourceSearcher(None)
+
     async def test():
         async with Context(use_browser=True) as ctx:
             rst = asyncio.gather(
-                searcher.search("https://anime.girigirilove.com/playGV26626-1-1/"),
+                searcher.search(
+                    "https://anime.girigirilove.com/playGV26626-1-1/"),
                 # searcher.search("https://vdm10.com/play/13842-2-1.html"),
                 # searcher.search("https://www.fqdm.cc/index.php/vod/play/id/11579/sid/2/nid/1.html"),
                 # searcher.search("https://www.yinghua2.com/index.php/vod/play/id/56591/sid/4/nid/1.html"),

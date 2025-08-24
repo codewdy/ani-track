@@ -28,7 +28,8 @@ class IndexGroupedParser:
             episode_links = []
         result = []
         for i in range(len(episodes_tag)):
-            href = episode_links[i] if i < len(episode_links) else episodes_tag[i]["href"]
+            href = episode_links[i] if i < len(
+                episode_links) else episodes_tag[i]["href"]
             if href == "" or href.startswith("javascript:"):
                 continue
             result.append(
@@ -43,7 +44,8 @@ class IndexGroupedParser:
         return result
 
     def parse(self, src, soup):
-        channel_names = [to_text(i) for i in soup.select(self.selectChannelNames)]
+        channel_names = [to_text(i)
+                         for i in soup.select(self.selectChannelNames)]
         episode_lists = [
             self.parse_episode_list(src, i)
             for i in soup.select(self.selectEpisodeLists)

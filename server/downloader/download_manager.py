@@ -4,6 +4,7 @@ from downloader.task_downloader import TaskDownloader
 import asyncio
 import traceback
 
+
 class DownloadManager:
     def __init__(self, max_concurrent):
         self.runner = ParallelRunner(max_concurrent)
@@ -15,7 +16,7 @@ class DownloadManager:
 
     async def join(self):
         await self.runner.join()
-    
+
     def get_status(self):
         return {
             "pending": self.pending_tasks,
@@ -42,19 +43,26 @@ class DownloadManager:
                 task.on_error(traceback.format_exc())
         self.downloaders.remove(downloader)
 
+
 if __name__ == "__main__":
     from downloader.download_task import DownloadTask
     from context import Context
+
     def on_error(err):
         print("ERROR", err)
+
     def on_finished():
         print("FINISHED")
+
     async def test():
         async with Context(use_browser=True) as ctx:
             download_manager = DownloadManager(2)
-            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-1/", dst="/tmp/1.mp4", on_error=on_error, on_finished=on_finished))
-            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-2-2/", dst="/tmp/2.mp4", on_error=on_error, on_finished=on_finished))
-            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-2-3/", dst="/tmp/3.mp4", on_error=on_error, on_finished=on_finished))
+            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-1/",
+                                    dst="/tmp/1.mp4", on_error=on_error, on_finished=on_finished))
+            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-2-2/",
+                                    dst="/tmp/2.mp4", on_error=on_error, on_finished=on_finished))
+            download_manager.submit(DownloadTask(sourceKey="girigirilove", url="https://anime.girigirilove.com/playGV26626-2-3/",
+                                    dst="/tmp/3.mp4", on_error=on_error, on_finished=on_finished))
             while True:
                 print(download_manager.get_status())
                 await asyncio.sleep(1)

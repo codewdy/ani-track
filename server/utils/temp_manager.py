@@ -2,6 +2,7 @@ import uuid
 import os
 from utils.run_cmd import run_cmd
 
+
 class TempManager:
     def __init__(self, temp_dir, auto_remove=True):
         self.dir = None
@@ -43,8 +44,10 @@ class TempManager:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 
+
 if __name__ == "__main__":
     import asyncio
+
     async def test():
         async with TempManager() as manager:
             print(manager.allocate_file("test.txt"))

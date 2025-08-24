@@ -32,7 +32,7 @@ class SearchEngine:
                 self.searcher_list,
             )
         )
-            
+
         return sum(results, [])
 
 
@@ -40,6 +40,7 @@ if __name__ == "__main__":
     from context import Context
 
     search_engine = SearchEngine()
+
     async def run():
         async with Context() as ctx:
             return await search_engine.search("碧蓝之海")

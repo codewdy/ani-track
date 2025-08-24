@@ -29,7 +29,7 @@ class Searcher:
             subject["sourceKey"] = self.key
             subject["icon"] = self.icon
         return result
-    
+
     async def search_resource(self, url):
         return await self.resource_searcher.search(url)
 

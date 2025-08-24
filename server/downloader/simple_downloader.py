@@ -1,7 +1,8 @@
 from context import Context
 
+
 class SimpleDownloader:
-    def __init__(self, src, dst, download_tracker = None):
+    def __init__(self, src, dst, download_tracker=None):
         self.src = src
         self.dst = dst
         self.download_tracker = download_tracker
@@ -20,10 +21,12 @@ class SimpleDownloader:
                     if self.download_tracker is not None:
                         self.download_tracker.add_bytes_downloaded(len(chunk))
 
+
 if __name__ == "__main__":
     import asyncio
     import aiohttp
     from downloader.download_tracker import DownloadTracker
+
     async def test():
         async with Context() as ctx:
             download_tracker = DownloadTracker(1)
