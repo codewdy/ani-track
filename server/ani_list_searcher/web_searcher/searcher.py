@@ -6,6 +6,7 @@ import asyncio
 
 class Searcher:
     def __init__(self, config):
+        self.key = config["key"]
         self.name = config["name"]
         self.icon = config["iconUrl"]
         self.subject_searcher = SubjectSearcher(config["searchConfig"])
@@ -26,6 +27,7 @@ class Searcher:
         for subject, channel in zip(result, channel_result):
             subject["channel"] = channel
             subject["source"] = self.name
+            subject["sourceKey"] = self.key
             subject["icon"] = self.icon
         return result
     

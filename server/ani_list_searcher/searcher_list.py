@@ -7,4 +7,8 @@ def searcher_list():
 
 @cache
 def searcher_dict():
-    return {i.name: i for i in searcher_list()}
+    return {i.key: i for i in searcher_list()}
+
+if __name__ == "__main__":
+    print(searcher_list())
+    print(searcher_dict())

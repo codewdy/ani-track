@@ -1,6 +1,7 @@
 {
     "searchers": [
         {
+            "key": "girigirilove",
             "name": "girigiri愛動漫",
             "iconUrl": "https://anime.girigirilove.com/upload/site/20231121-1/fdd2694db66628a9deadd86e50aedd43.png",
             "searchConfig": {
@@ -20,6 +21,7 @@
             }
         },
         {
+            "key": "wedm",
             "name": "Wedm",
             "iconUrl": "https://vdm10.com/favicon.ico",
             "searchConfig": {
@@ -38,6 +40,7 @@
             }
         },
         {
+            "key": "fqdm",
             "name": "番茄动漫",
             "iconUrl": "https://www.fqdm.cc/upload/mxprocms/20240530-1/3d17fab3cb763e6ad7031974bf87f322.jpg",
             "searchConfig": {
@@ -56,6 +59,7 @@
             }
         },
         {
+            "key": "zgdmw",
             "name": "中国动漫网(可能有广告)",
             "iconUrl": "https://zgacgn.com/favicon.ico",
             "searchConfig": {
@@ -74,6 +78,7 @@
             }
         },
         {
+            "key": "xfdm",
             "name": "稀饭动漫",
             "iconUrl": "https://dm1.xfdm.pro/upload/site/20240308-1/813e41f81d6f85bfd7a44bf8a813f9e5.png",
             "searchConfig": {
@@ -93,6 +98,7 @@
             }
         },
         {
+            "key": "mxone",
             "name": "MXONE",
             "iconUrl": "https://omofun.icu/template/mxpro/mxtheme/images/favicon.png",
             "searchConfig": {
@@ -111,6 +117,7 @@
             }
         },
         {
+            "key": "mxdmp",
             "name": "MX动漫(mxdmp)",
             "iconUrl": "https://www.mxdmp.com/favicon.ico",
             "searchConfig": {
