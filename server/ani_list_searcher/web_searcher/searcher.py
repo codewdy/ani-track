@@ -31,8 +31,8 @@ class Searcher:
             subject["icon"] = self.icon
         return result
     
-    async def search_resource(self, session, url):
-        return await self.resource_searcher.search(session, url)
+    async def search_resource(self, browser, url):
+        return await self.resource_searcher.search(browser, url)
 
 
 if __name__ == "__main__":
