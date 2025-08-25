@@ -22,13 +22,14 @@ class Episode(BaseModel):
 class Channel(BaseModel):
     name: str
     url: str
+    source_key: str
     dirname: str
     episodes: List[Episode]
     tracking: bool
     latest_update: datetime
 
 
-class AnimationStatus(Enum):
+class AnimationStatus(str, Enum):
     Wanted = "wanted"
     Watching = "watching"
     Watched = "watched"
