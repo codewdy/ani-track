@@ -39,14 +39,22 @@ class AnimationStatus(str, Enum):
 class Animation(BaseModel):
     name: str
     dirname: str
-    channels: List[Channel]
+    channels: Dict[int, Channel]
+    next_channel_id: int
     current_channel: int
     status: AnimationStatus
 
 
+class DownloadError(BaseModel):
+    animation_id: int
+    channel_id: int
+    episode_id: int
+
+
 class AnimationDB(BaseModel):
     animations: Dict[int, Animation]
-    next_id: int
+    next_animation_id: int
+    download_errors: List[DownloadError]
 
 
 class ResourceConfig(BaseModel):
