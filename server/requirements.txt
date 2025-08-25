@@ -3,3 +3,4 @@ lxml
 aiohttp
 asyncio
 playwright
+pydantic
