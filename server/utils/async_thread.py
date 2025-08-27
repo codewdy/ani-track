@@ -11,6 +11,7 @@ class AsyncThread:
         self._thread = threading.Thread(
             target=lambda: asyncio.run(self.main_loop()))
         self._thread.start()
+        self._event.wait()
 
     async def main_loop(self):
         await self.init()
@@ -27,7 +28,6 @@ class AsyncThread:
     @staticmethod
     def task(func):
         def wrapper(self, *args, **kwargs):
-            self._event.wait()
             self._loop.call_soon_threadsafe(
                 lambda: func(self, *args, **kwargs))
         return wrapper
