@@ -21,12 +21,13 @@ class Episode(BaseModel):
 
 class Channel(BaseModel):
     name: str
+    channel_name: str
     url: str
     source_key: str
     dirname: str
-    episodes: List[Episode]
     tracking: bool
     latest_update: datetime
+    episodes: List[Episode]
 
 
 class AnimationStatus(str, Enum):
@@ -38,12 +39,14 @@ class AnimationStatus(str, Enum):
 
 class Animation(BaseModel):
     name: str
-    dirname: str
+    bangumi_id: str
+    icon_url: str
     resource_dir: str
+    dirname: str
+    status: AnimationStatus
     channels: Dict[int, Channel]
     next_channel_id: int
     current_channel: int
-    status: AnimationStatus
 
 
 class DownloadError(BaseModel):
