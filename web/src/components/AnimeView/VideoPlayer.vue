@@ -1,20 +1,19 @@
 <template>
     <div :style="`width: 100%; max-width: ${width}px; margin: 0 auto; border: 1px solid black;`">
-        <div :id="dynamicId"></div>
+        <div ref="videoRef"></div>
     </div>
 </template>
 
 <script setup>
-import Player from 'xgplayer';
+import XGPlayer from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
 import { watch, onMounted, ref, defineProps } from 'vue';
-import { getRandomInt } from '@/lib/Random';
 
 const { url = '', width = 800 } = defineProps(['url', 'width'])
 
 
 let player = null;
-const dynamicId = ref('player-' + getRandomInt(0, 1000000));
+const videoRef = ref();
 
 watch(() => url, (newUrl) => {
     if (player) {
@@ -23,8 +22,9 @@ watch(() => url, (newUrl) => {
 })
 
 onMounted(() => {
-    player = new Player({
-        id: dynamicId.value,
+    console.log(videoRef)
+    player = new XGPlayer({
+        el: videoRef.value,
         url: url,
         fluid: true,
     });
