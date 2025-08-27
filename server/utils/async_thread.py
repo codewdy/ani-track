@@ -1,4 +1,5 @@
 import asyncio
+import threading
 
 
 class AsyncThread:
@@ -8,6 +9,7 @@ class AsyncThread:
         self._event = None
 
     def start(self):
+        self._event = threading.Event()
         self._thread = threading.Thread(
             target=lambda: asyncio.run(self.main_loop()))
         self._thread.start()
