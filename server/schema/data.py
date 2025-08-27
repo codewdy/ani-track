@@ -56,15 +56,3 @@ class AnimationDB(BaseModel):
     animations: Dict[int, Animation]
     next_animation_id: int
     download_errors: List[DownloadError]
-
-
-class ResourceConfig(BaseModel):
-    root_dir: str
-    sub_dirs: List[str]
-    current_sub_dir: str
-
-
-class Config(BaseModel):
-    tmp_dir: str
-    resource: ResourceConfig
-    animationdb: str
