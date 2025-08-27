@@ -21,7 +21,7 @@ class Episode(BaseModel):
 
 class Channel(BaseModel):
     name: str
-    channel_name: str
+    search_name: str
     url: str
     source_key: str
     dirname: str
