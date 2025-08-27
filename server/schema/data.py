@@ -39,6 +39,7 @@ class AnimationStatus(str, Enum):
 class Animation(BaseModel):
     name: str
     dirname: str
+    resource_dir: str
     channels: Dict[int, Channel]
     next_channel_id: int
     current_channel: int
