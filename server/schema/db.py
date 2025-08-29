@@ -37,13 +37,18 @@ class AnimationStatus(str, Enum):
     Dropped = "dropped"
 
 
-class Animation(BaseModel):
+class AnimationInfo(BaseModel):
+    animation_id: int
     name: str
     bangumi_id: str
     icon_url: str
     resource_dir: str
     dirname: str
     status: AnimationStatus
+
+
+class Animation(BaseModel):
+    info: AnimationInfo
     channels: Dict[int, Channel]
     next_channel_id: int
     current_channel: int
