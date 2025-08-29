@@ -13,13 +13,17 @@ class BackgroudTracker(AsyncThread):
         await self.init()
 
     async def stop(self):
-        await self.db_manager.stop()
+        await self.stop_task()
         await super().stop()
 
     @AsyncThread.threadrun
     async def init(self):
         self.db_manager = DBManager(self.config)
         await self.db_manager.start()
+
+    @AsyncThread.threadrun
+    async def stop_task(self):
+        await self.db_manager.stop()
 
     def db(self):
         return self.db_manager.db()
