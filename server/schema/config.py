@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
+from datetime import timedelta
 
 
 class ResourceConfig(BaseModel):
@@ -14,12 +15,15 @@ class ServiceConfig(BaseModel):
 
 
 class TrackerConfig(BaseModel):
-    save_interval: int = 60 * 60
+    save_interval: timedelta = timedelta(hours=1)
+    check_interval: timedelta = timedelta(hours=1)
+    update_interval: timedelta = timedelta(days=1)
+    max_download_concurrent: int = 5
+    tmp_dir: str
 
 
 class Config(BaseModel):
     resource: ResourceConfig
     service: ServiceConfig
     tracker: TrackerConfig
-    tmp_dir: str
     db_file: str

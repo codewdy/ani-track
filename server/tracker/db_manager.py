@@ -32,5 +32,5 @@ class DBManager:
 
     async def save_loop(self):
         while True:
-            await asyncio.sleep(self.config.tracker.save_interval)
+            await asyncio.sleep(self.config.tracker.save_interval.total_seconds())
             self.save()

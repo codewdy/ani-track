@@ -30,6 +30,13 @@ class Searcher:
             subject["icon"] = self.icon
         return result
 
+    async def search_episode(self, url, name):
+        channels = await self.channel_searcher.search(url)
+        for channel in channels:
+            if channel["name"] == name:
+                return channel
+        raise Exception("Channel not found.")
+
     async def search_resource(self, url):
         return await self.resource_searcher.search(url)
 

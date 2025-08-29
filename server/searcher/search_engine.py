@@ -35,6 +35,9 @@ class SearchEngine:
 
         return sum(results, [])
 
+    async def search_episode(self, source_key, url, channel_name):
+        return await self.searcher_list[source_key].search_episode(url, channel_name)
+
 
 if __name__ == "__main__":
     from context import Context
