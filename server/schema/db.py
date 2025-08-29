@@ -61,6 +61,6 @@ class DownloadError(BaseModel):
 
 
 class AnimationDB(BaseModel):
-    animations: Dict[int, Animation]
-    next_animation_id: int
-    download_errors: List[DownloadError]
+    animations: Dict[int, Animation] = {}
+    next_animation_id: int = 1
+    download_errors: List[DownloadError] = []

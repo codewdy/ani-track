@@ -13,8 +13,13 @@ class ServiceConfig(BaseModel):
     port: int
 
 
+class TrackerConfig(BaseModel):
+    save_interval: int = 60 * 60
+
+
 class Config(BaseModel):
     resource: ResourceConfig
     service: ServiceConfig
+    tracker: TrackerConfig
     tmp_dir: str
     db_file: str
