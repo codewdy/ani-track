@@ -67,13 +67,15 @@ class Tracker:
             )
             db.animations[animation_id] = animation
             print(db)
-            return AddAnimation.Response(animation_id=animation_id)
+        self.background_tracker.update_channel(animation_id, channel_id)
+        return AddAnimation.Response(animation_id=animation_id)
 
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
 
     async def test():
+        os.remove("ani_track.db")
         tracker = Tracker(config)
         async with tracker:
             req = AddAnimation.Request(
@@ -82,9 +84,10 @@ if __name__ == "__main__":
                 icon_url="https://www.baidu.com",
                 status=AnimationStatus.Wanted,
                 channel_name="测试",
-                channel_search_name="测试",
-                channel_url="https://www.baidu.com",
-                channel_source_key="test",
+                channel_search_name="简中",
+                channel_url="https://anime.girigirilove.com/GV26626/",
+                channel_source_key="girigirilove",
             )
             await tracker.add_animation(req)
+            await asyncio.sleep(2)
     asyncio.run(test())

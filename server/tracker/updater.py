@@ -1,6 +1,9 @@
 import asyncio
 from schema.config import Config
-from tracker.download_manager import DownloadManager
+from downloader.download_manager import DownloadManager
+from tracker.db_manager import DBManager
+from searcher.search_engine import SearchEngine
+from schema.db import Episode, DownloadStatus
 
 
 class Updater:
@@ -11,19 +14,25 @@ class Updater:
             self.config.tracker.max_download_concurrent)
         self.search_engine = SearchEngine()
 
-    def update(self, animation_id, channel_id):
+    async def start(self):
+        pass
+
+    async def stop(self):
+        pass
+
+    async def update(self, animation_id, channel_id):
         with self.db_manager.db() as db:
             channel = db.animations[animation_id].channels[channel_id].model_copy(
                 deep=True)
-        episode = self.search_engine.search_episode(
-            channel.sourceKey, channel.link, channel.search_name)
+        episode = await self.search_engine.search_episode(
+            channel.source_key, channel.url, channel.search_name)
         if len(episode["episodes"]) > len(channel.episodes):
             with self.db_manager.db() as db:
                 for i in range(len(channel.episodes), len(episode["episodes"])):
                     mutable_channel = db.animations[animation_id].channels[channel_id]
                     mutable_channel.episodes.append(Episode(
-                        name=episode["episodes"][i]["name"],
-                        url=episode["episodes"][i]["url"],
+                        name=episode["episodes"][i]["episode"],
+                        url=episode["episodes"][i]["episode_link"],
                         filename="",
                         download_status=DownloadStatus.Running,
                     ))

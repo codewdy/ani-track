@@ -1,4 +1,4 @@
-from searcher.searcher_list import searcher_list
+from searcher.searcher_list import searcher_list, searcher_dict
 import asyncio
 import aiohttp
 
@@ -24,6 +24,7 @@ class SearchFunctor:
 class SearchEngine:
     def __init__(self):
         self.searcher_list = searcher_list()
+        self.searcher_dict = searcher_dict()
 
     async def search(self, keyword):
         results = await asyncio.gather(
@@ -36,7 +37,7 @@ class SearchEngine:
         return sum(results, [])
 
     async def search_episode(self, source_key, url, channel_name):
-        return await self.searcher_list[source_key].search_episode(url, channel_name)
+        return await self.searcher_dict[source_key].search_episode(url, channel_name)
 
 
 if __name__ == "__main__":
