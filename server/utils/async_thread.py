@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import traceback
 
 
 class AsyncThread:
@@ -26,16 +27,26 @@ class AsyncThread:
         self._loop.call_soon_threadsafe(self._loop.stop)
         await asyncio.to_thread(self._thread.join)
 
+    def done(self, future):
+        self._futures.remove(future)
+
+    async def protected(self, coro):
+        try:
+            return await coro
+        except Exception as e:
+            traceback.print_exc()
+            return e
+
     @staticmethod
     def threadrun(func):
         def wrap(self, *args, **kwargs):
             if not self._running:
                 raise RuntimeError("AsyncThread not running")
             future = asyncio.run_coroutine_threadsafe(
-                func(self, *args, **kwargs), self._loop)
+                self.protected(func(self, *args, **kwargs)), self._loop)
             rst = asyncio.wrap_future(future)
             self._futures.add(rst)
-            rst.add_done_callback(self._futures.remove)
+            rst.add_done_callback(self.done)
             return rst
         return wrap
 
