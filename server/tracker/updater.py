@@ -16,7 +16,7 @@ class Updater:
             channel = db.animations[animation_id].channels[channel_id].model_copy(
                 deep=True)
         episode = self.search_engine.search_episode(
-            channel.sourceKey, channel.link, channel.name)
+            channel.sourceKey, channel.link, channel.search_name)
         if len(episode["episodes"]) > len(channel.episodes):
             with self.db_manager.db() as db:
                 for i in range(len(channel.episodes), len(episode["episodes"])):
