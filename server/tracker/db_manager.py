@@ -1,6 +1,7 @@
 from schema.config import Config
 from schema.db import AnimationDB
 from utils.lock_guard import LockGuard
+from utils.atomic_file_write import atomic_file_write
 import os
 import asyncio
 
@@ -31,9 +32,9 @@ class DBManager:
         return self._db
 
     def save(self):
-        with open(self.config.db_file, "w") as f:
-            with self.db() as db:
-                f.write(db.model_dump_json(indent=2))
+        with self.db() as db:
+            dbjson = db.model_dump_json(indent=2)
+        atomic_file_write(self.config.db_file, dbjson)
 
     async def save_loop(self):
         while True:
