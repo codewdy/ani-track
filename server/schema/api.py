@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from schema.db import AnimationInfo, Animation, AnimationStatus
-from datetime import datetime
 from typing import List, Optional
 
 

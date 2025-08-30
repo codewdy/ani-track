@@ -2,7 +2,7 @@ import datetime
 from pydantic import BaseModel
 from enum import Enum
 from typing import Optional, List, Dict
-from datetime import datetime
+from schema.dtype import DateTimeWithTimeZone
 
 
 class DownloadStatus(Enum):
@@ -26,7 +26,7 @@ class Channel(BaseModel):
     source_key: str
     dirname: str
     tracking: bool
-    latest_update: datetime
+    latest_update: DateTimeWithTimeZone
     episodes: List[Episode]
 
 
