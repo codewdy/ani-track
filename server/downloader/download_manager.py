@@ -36,10 +36,13 @@ class DownloadManager:
                 try:
                     task.on_finished()
                 except:
-                    pass
+                    traceback.print_exc()
         except Exception as e:
             if task.on_error:
-                task.on_error(traceback.format_exc())
+                try:
+                    task.on_error(traceback.format_exc())
+                except:
+                    traceback.print_exc()
         self.downloaders.remove(downloader)
 
 
