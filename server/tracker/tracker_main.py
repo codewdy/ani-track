@@ -5,6 +5,7 @@ from tracker.db_manager import DBManager
 import asyncio
 import os
 from tracker.background_tracker import BackgroudTracker
+import signal
 
 
 class Tracker:
@@ -18,9 +19,17 @@ class Tracker:
 
     async def start(self):
         await self.background_tracker.start()
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        signal.signal(signal.SIGINT, self._signal_handler)
 
     async def stop(self):
         await self.background_tracker.stop()
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    def _signal_handler(self, signum, frame):
+        self.db_manager.save()
+        exit(-1)
 
     async def __aenter__(self):
         await self.start()
