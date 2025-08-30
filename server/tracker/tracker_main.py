@@ -4,32 +4,28 @@ from schema.api import AddAnimation
 from tracker.db_manager import DBManager
 import asyncio
 import os
-from tracker.background_tracker import BackgroudTracker
 import signal
+from context import Context
+from tracker.updater import Updater
 
 
 class Tracker:
     def __init__(self, config: Config):
         self.config = config
-        self.background_tracker = BackgroudTracker(self.config)
-
-    @property
-    def db_manager(self) -> DBManager:
-        return self.background_tracker.db_manager
 
     async def start(self):
-        await self.background_tracker.start()
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        signal.signal(signal.SIGINT, self._signal_handler)
+        self.context = Context(
+            use_browser=True, tmp_dir=self.config.tracker.tmp_dir)
+        await self.context.__aenter__()
+        self.db_manager = DBManager(self.config)
+        self.updater = Updater(self.config, self.db_manager)
+        await self.db_manager.start()
+        await self.updater.start()
 
     async def stop(self):
-        await self.background_tracker.stop()
-        signal.signal(signal.SIGTERM, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    def _signal_handler(self, signum, frame):
-        self.db_manager.save()
-        exit(-1)
+        await self.updater.stop()
+        await self.db_manager.stop()
+        await self.context.__aexit__(None, None, None)
 
     async def __aenter__(self):
         await self.start()
@@ -38,45 +34,44 @@ class Tracker:
         await self.stop()
 
     async def add_animation(self, request: AddAnimation.Request) -> AddAnimation.Response:
-        with self.db_manager.db() as db:
-            animation_id = db.next_animation_id
-            channel_id = 1
-            db.next_animation_id = db.next_animation_id + 1
+        db = self.db_manager.db
+        animation_id = db.next_animation_id
+        channel_id = 1
+        db.next_animation_id = db.next_animation_id + 1
 
-            resource_dir = self.config.resource.default
-            ani_dirname = str(animation_id)
-            channel_dir = str(channel_id)
-            os.makedirs(self.config.resource.dirs[resource_dir] +
-                        "/" + ani_dirname + "/" + channel_dir, exist_ok=True)
+        resource_dir = self.config.resource.default
+        ani_dirname = str(animation_id)
+        channel_dir = str(channel_id)
+        os.makedirs(self.config.resource.dirs[resource_dir] +
+                    "/" + ani_dirname + "/" + channel_dir, exist_ok=True)
 
-            animation = Animation(
-                info=AnimationInfo(
-                    animation_id=animation_id,
-                    name=request.name,
-                    bangumi_id=request.bangumi_id,
-                    icon_url=request.icon_url,
-                    resource_dir=resource_dir,
-                    dirname=ani_dirname,
-                    status=request.status,
-                ),
-                channels={
-                    channel_id: Channel(
-                        name=request.channel_name,
-                        search_name=request.channel_search_name,
-                        url=request.channel_url,
-                        source_key=request.channel_source_key,
-                        dirname=channel_dir,
-                        tracking=True,
-                        latest_update=0,
-                        episodes=[],
-                    )
-                },
-                next_channel_id=2,
-                current_channel=channel_id,
-            )
-            db.animations[animation_id] = animation
-            print(db)
-        self.background_tracker.update_channel(animation_id, channel_id)
+        animation = Animation(
+            info=AnimationInfo(
+                animation_id=animation_id,
+                name=request.name,
+                bangumi_id=request.bangumi_id,
+                icon_url=request.icon_url,
+                resource_dir=resource_dir,
+                dirname=ani_dirname,
+                status=request.status,
+            ),
+            channels={
+                channel_id: Channel(
+                    name=request.channel_name,
+                    search_name=request.channel_search_name,
+                    url=request.channel_url,
+                    source_key=request.channel_source_key,
+                    dirname=channel_dir,
+                    tracking=True,
+                    latest_update=0,
+                    episodes=[],
+                )
+            },
+            next_channel_id=2,
+            current_channel=channel_id,
+        )
+        db.animations[animation_id] = animation
+        await self.updater.update(animation_id, channel_id)
         return AddAnimation.Response(animation_id=animation_id)
 
 
