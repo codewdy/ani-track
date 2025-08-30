@@ -75,7 +75,10 @@ if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
 
     async def test():
-        os.remove("ani_track.db")
+        try:
+            os.remove("ani_track.db")
+        except:
+            pass
         tracker = Tracker(config)
         async with tracker:
             req = AddAnimation.Request(
@@ -89,5 +92,5 @@ if __name__ == "__main__":
                 channel_source_key="girigirilove",
             )
             await tracker.add_animation(req)
-            await asyncio.sleep(2)
+            await asyncio.sleep(200)
     asyncio.run(test())

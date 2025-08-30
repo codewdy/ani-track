@@ -7,6 +7,8 @@ from searcher.search_engine import SearchEngine
 from schema.db import Episode, DownloadStatus
 from datetime import datetime
 from downloader.download_task import DownloadTask
+from tracker.path_manager import PathManager, PathType
+from functools import partial
 
 
 class Updater:
@@ -16,6 +18,7 @@ class Updater:
         self.download_manager = DownloadManager(
             self.config.tracker.max_download_concurrent)
         self.search_engine = SearchEngine()
+        self.path_manager = PathManager(self.config, PathType.LocalPath)
 
     async def start(self):
         pass
@@ -27,6 +30,7 @@ class Updater:
         pass
 
     def download_done(self, animation_id, channel_id, episode_id):
+        print(f"download done {animation_id} {channel_id} {episode_id}")
         with self.db_manager.db() as db:
             db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Finished
 
@@ -56,12 +60,13 @@ class Updater:
                 download_task.append(DownloadTask(
                     sourceKey=mutable_channel.source_key,
                     url=episode["episodes"][i]["episode_link"],
-                    dst=f"{self.config.resource.dirs[mutable_animation.info.resource_dir]}/{mutable_animation.info.dirname}/{mutable_channel.dirname}/{i+1}.mp4",
-                    on_finished=lambda meta: self.download_done(
-                        animation_id, channel_id, i),
-                    on_error=lambda error: self.download_failed(
-                        animation_id, channel_id, i, error),
+                    dst=str(self.path_manager.episode_path(
+                        db, animation_id, channel_id, i)),
+                    on_finished=partial(self.download_done,
+                                        animation_id, channel_id, i),
+                    on_error=partial(self.download_failed,
+                                     animation_id, channel_id, i),
                 ))
             mutable_channel.latest_update = datetime.now()
         for task in download_task:
-            self.download_manager.add_task(task)
+            self.download_manager.submit(task)

@@ -59,7 +59,6 @@ class M3U8Downloader:
                 else:
                     newlines.append(fragments[current_fragment] + "\n")
                     current_fragment += 1
-            print(newlines)
         with open(src_m3u8, "w") as f:
             f.writelines(newlines)
         await run_cmd(

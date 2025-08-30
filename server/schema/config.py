@@ -1,3 +1,4 @@
+import resource
 from pydantic import BaseModel
 from typing import Dict
 from datetime import timedelta
@@ -10,6 +11,7 @@ class ResourceConfig(BaseModel):
 
 class ServiceConfig(BaseModel):
     web_dir: str = ""
+    resource_web_path: str = "/resource"
     api_port: int = 8080
     port: int = 8081
 
