@@ -1,0 +1,21 @@
+{
+    "resource": {
+        "dirs": {
+            "test1": "test1"
+        },
+        "default": "test1"
+    },
+    "service": {
+        "web_dir": "web/dist",
+        "api_port": 8080,
+        "port": 8081
+    },
+    "tracker": {
+        "save_interval": "PT1H",
+        "check_interval": "PT1H",
+        "update_interval": "P1D",
+        "max_download_concurrent": 5,
+        "tmp_dir": "/tmp/ani_track"
+    },
+    "db_file": "ani_track.db"
+}

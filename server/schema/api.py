@@ -1,14 +1,19 @@
 from pydantic import BaseModel
-from schema.data import AnimationInfo, Animation, AnimationStatus
+from schema.db import AnimationInfo, Animation, AnimationStatus
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 class AddAnimation:
     class Request(BaseModel):
         name: str
-        source_key: str
+        bangumi_id: str
+        icon_url: str
+        status: AnimationStatus
+        channel_name: str
+        channel_search_name: str
         channel_url: str
+        channel_source_key: str
 
     class Response(BaseModel):
         animation_id: int

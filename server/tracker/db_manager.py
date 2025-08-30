@@ -1,6 +1,8 @@
 from schema.config import Config
 from schema.db import AnimationDB
 from utils.lock_guard import LockGuard
+import os
+import asyncio
 
 
 class DBManager:
@@ -19,7 +21,10 @@ class DBManager:
     async def stop(self):
         if self._save_task is not None:
             self._save_task.cancel()
-            await self._save_task
+            try:
+                await self._save_task
+            except asyncio.CancelledError:
+                pass
         self.save()
 
     def db(self):

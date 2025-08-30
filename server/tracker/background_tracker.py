@@ -1,11 +1,14 @@
 from schema.config import Config
 from schema.db import AnimationDB
 from schema.api import AddAnimation
-from server.tracker.db_manager import DBManager
+from tracker.db_manager import DBManager
+from utils.async_thread import AsyncThread
+from context import Context
 
 
 class BackgroudTracker(AsyncThread):
     def __init__(self, config: Config):
+        super().__init__()
         self.config = config
 
     async def start(self):
