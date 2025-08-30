@@ -1,7 +1,7 @@
 import resource
 from pydantic import BaseModel
 from typing import Dict
-from datetime import timedelta
+from schema.dtype import TimeDelta
 
 
 class ResourceConfig(BaseModel):
@@ -17,9 +17,9 @@ class ServiceConfig(BaseModel):
 
 
 class TrackerConfig(BaseModel):
-    save_interval: timedelta = timedelta(hours=1)
-    check_interval: timedelta = timedelta(hours=1)
-    update_interval: timedelta = timedelta(days=1)
+    save_interval: TimeDelta = "1h"
+    check_interval: TimeDelta = "1h"
+    update_interval: TimeDelta = "1d"
     max_download_concurrent: int = 5
     tmp_dir: str = "/tmp/ani_track"
 

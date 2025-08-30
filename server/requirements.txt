@@ -4,3 +4,4 @@ aiohttp
 asyncio
 playwright
 pydantic
+pandas
