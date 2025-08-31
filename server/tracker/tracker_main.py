@@ -8,9 +8,10 @@ from context import Context
 from tracker.updater import Updater
 from tracker.path_manager import PathManager
 from bangumi import bangumi
+from utils.simple_service import SimpleService
 
 
-class Tracker:
+class Tracker(SimpleService):
     def __init__(self, config: Config):
         self.config = config
         self.path_manager = PathManager(self.config)
@@ -35,6 +36,7 @@ class Tracker:
     async def __aexit__(self, exc_type, exc, tb):
         await self.stop()
 
+    @SimpleService.api
     async def add_animation(self, request: AddAnimation.Request) -> AddAnimation.Response:
         db = self.db_manager.db
         animation_id = db.next_animation_id
@@ -74,6 +76,7 @@ class Tracker:
         await self.updater.update(animation_id, channel_id)
         return AddAnimation.Response(animation_id=animation_id)
 
+    @SimpleService.api
     async def get_animations(self, request: GetAnimations.Request) -> GetAnimations.Response:
         db = self.db_manager.db
         animations = []
@@ -97,6 +100,7 @@ class Tracker:
             ))
         return GetAnimations.Response(animations=animations)
 
+    @SimpleService.api
     async def get_animation(self, request: GetAnimation.Request) -> GetAnimation.Response:
         db = self.db_manager.db
         animation = db.animations[request.animation_id]
@@ -118,6 +122,7 @@ class Tracker:
             episodes=episodes,
         ))
 
+    @SimpleService.api
     async def get_download_manager_status(self, request: GetDownloadManagerStatus.Request) -> GetDownloadManagerStatus.Response:
         status = self.updater.download_manager.get_status()
         return GetDownloadManagerStatus.Response(
@@ -137,6 +142,7 @@ class Tracker:
             ],
         )
 
+    @SimpleService.api
     async def search_bangumi(self, request: SearchBangumi.Request) -> SearchBangumi.Response:
         search_result = await bangumi.search(request.keyword)
         return SearchBangumi.Response(animations=[

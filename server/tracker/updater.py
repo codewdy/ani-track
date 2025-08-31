@@ -30,7 +30,6 @@ class Updater:
         pass
 
     def download_done(self, animation_id, channel_id, episode_id):
-        print(f"download done {animation_id} {channel_id} {episode_id}")
         db = self.db_manager.db
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Finished
 
