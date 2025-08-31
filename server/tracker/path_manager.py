@@ -24,3 +24,7 @@ class PathManager:
         return (pathlib.Path(self.config.service.resource_web_path) / db.animations[animation_id].resource_dir /
                 db.animations[animation_id].dirname / db.animations[animation_id].channels[channel_id].dirname /
                 db.animations[animation_id].channels[channel_id].episodes[episode_id].filename)
+
+    def resource_name(self, db, animation_id, channel_id, episode_id):
+        return f"{db.animations[animation_id].name} - {db.animations[animation_id].channels[channel_id].name}" +\
+            f" - {db.animations[animation_id].channels[channel_id].episodes[episode_id].name}"

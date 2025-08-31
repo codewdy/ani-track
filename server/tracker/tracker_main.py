@@ -1,6 +1,6 @@
 from schema.config import Config
 from schema.db import Animation, Channel, AnimationStatus, DownloadStatus
-from schema.api import AddAnimation, GetAnimations, GetAnimation
+from schema.api import AddAnimation, GetAnimations, GetAnimation, GetDownloadManagerStatus
 from tracker.db_manager import DBManager
 import asyncio
 import os
@@ -117,6 +117,25 @@ class Tracker:
             episodes=episodes,
         ))
 
+    async def get_download_manager_status(self, request: GetDownloadManagerStatus.Request) -> GetDownloadManagerStatus.Response:
+        status = self.updater.download_manager.get_status()
+        return GetDownloadManagerStatus.Response(
+            downloading=[
+                GetDownloadManagerStatus.DownloadTask(
+                    resource_name=task.meta["resource_name"],
+                    status=s,
+                )
+                for task, s in status["running"]
+            ],
+            pending=[
+                GetDownloadManagerStatus.DownloadTask(
+                    resource_name=task.meta["resource_name"],
+                    status=None,
+                )
+                for task in status["pending"]
+            ],
+        )
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
@@ -141,6 +160,7 @@ if __name__ == "__main__":
             await tracker.add_animation(req)
             for i in range(100):
                 print(await tracker.get_animations(GetAnimations.Request()))
+                print(await tracker.get_download_manager_status(GetDownloadManagerStatus.Request()))
                 await asyncio.sleep(10)
 
     async def test2():
@@ -148,4 +168,4 @@ if __name__ == "__main__":
         async with tracker:
             req = GetAnimation.Request(animation_id=1)
             print(await tracker.get_animation(req))
-    asyncio.run(test2())
+    asyncio.run(test1())

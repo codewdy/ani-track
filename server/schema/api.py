@@ -57,6 +57,19 @@ class GetAnimation:
         animation: 'GetAnimation.AnimationInfo'
 
 
+class GetDownloadManagerStatus:
+    class DownloadTask(BaseModel):
+        resource_name: str
+        status: Optional[str]
+
+    class Request(BaseModel):
+        pass
+
+    class Response(BaseModel):
+        downloading: List['GetDownloadManagerStatus.DownloadTask']
+        pending: List['GetDownloadManagerStatus.DownloadTask']
+
+
 class UpdateAnimation:
     class Request(BaseModel):
         animation_id: int

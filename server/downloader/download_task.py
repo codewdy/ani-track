@@ -7,5 +7,6 @@ class DownloadTask:
     sourceKey: str
     url: str
     dst: str
+    meta: Any = None
     on_finished: Optional[Callable[[], None]] = None
     on_error: Optional[Callable[[Exception], None]] = None

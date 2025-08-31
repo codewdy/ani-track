@@ -62,6 +62,9 @@ class Updater:
                 url=episode["episodes"][i]["episode_link"],
                 dst=str(self.path_manager.episode_path(
                     db, animation_id, channel_id, i)),
+                meta={
+                    "resource_name": self.path_manager.resource_name(db, animation_id, channel_id, i),
+                },
                 on_finished=partial(self.download_done,
                                     animation_id, channel_id, i),
                 on_error=partial(self.download_failed,
