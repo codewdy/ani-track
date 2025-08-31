@@ -4,7 +4,6 @@ from schema.api import AddAnimation
 from tracker.db_manager import DBManager
 import asyncio
 import os
-import signal
 from context import Context
 from tracker.updater import Updater
 
