@@ -1,12 +1,13 @@
 from schema.config import Config
 from schema.db import Animation, Channel, AnimationStatus, DownloadStatus
-from schema.api import AddAnimation, GetAnimations, GetAnimation, GetDownloadManagerStatus
+from schema.api import AddAnimation, GetAnimations, GetAnimation, GetDownloadManagerStatus, SearchBangumi
 from tracker.db_manager import DBManager
 import asyncio
 import os
 from context import Context
 from tracker.updater import Updater
 from tracker.path_manager import PathManager
+from bangumi import bangumi
 
 
 class Tracker:
@@ -136,6 +137,17 @@ class Tracker:
             ],
         )
 
+    async def search_bangumi(self, request: SearchBangumi.Request) -> SearchBangumi.Response:
+        search_result = await bangumi.search(request.keyword)
+        return SearchBangumi.Response(animations=[
+            SearchBangumi.AnimationInfo(
+                id=item["id"],
+                name=item["name"],
+                image=item["image"],
+            )
+            for item in search_result
+        ])
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
@@ -168,4 +180,10 @@ if __name__ == "__main__":
         async with tracker:
             req = GetAnimation.Request(animation_id=1)
             print(await tracker.get_animation(req))
-    asyncio.run(test1())
+
+    async def test3():
+        tracker = Tracker(config)
+        async with tracker:
+            req = SearchBangumi.Request(keyword="测试")
+            print(await tracker.search_bangumi(req))
+    asyncio.run(test3())

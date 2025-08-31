@@ -70,6 +70,19 @@ class GetDownloadManagerStatus:
         pending: List['GetDownloadManagerStatus.DownloadTask']
 
 
+class SearchBangumi:
+    class Request(BaseModel):
+        keyword: str
+
+    class Response(BaseModel):
+        animations: List['SearchBangumi.AnimationInfo']
+
+    class AnimationInfo(BaseModel):
+        id: int
+        name: str
+        image: str
+
+
 class UpdateAnimation:
     class Request(BaseModel):
         animation_id: int
