@@ -11,7 +11,7 @@ async def request(session, url, req):
 async def test2():
     async with ClientSession() as session:
         req = GetAnimation.Request(animation_id=1)
-        print(await request(session, "http://localhost:8080/api/get_animation", req))
+        print(await request(session, "http://localhost:9876/api/get_animation", req))
 
 
 asyncio.run(test2())
