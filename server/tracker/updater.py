@@ -7,7 +7,7 @@ from searcher.search_engine import SearchEngine
 from schema.db import Episode, DownloadStatus
 from datetime import datetime
 from downloader.download_task import DownloadTask
-from tracker.path_manager import PathManager, PathType
+from tracker.path_manager import PathManager
 from functools import partial
 
 
@@ -18,7 +18,7 @@ class Updater:
         self.download_manager = DownloadManager(
             self.config.tracker.max_download_concurrent)
         self.search_engine = SearchEngine()
-        self.path_manager = PathManager(self.config, PathType.LocalPath)
+        self.path_manager = PathManager(self.config)
 
     async def start(self):
         pass

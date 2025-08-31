@@ -1,16 +1,18 @@
 from schema.config import Config
-from schema.db import Animation, Channel, AnimationStatus
-from schema.api import AddAnimation
+from schema.db import Animation, Channel, AnimationStatus, DownloadStatus
+from schema.api import AddAnimation, GetAnimations, GetAnimation
 from tracker.db_manager import DBManager
 import asyncio
 import os
 from context import Context
 from tracker.updater import Updater
+from tracker.path_manager import PathManager
 
 
 class Tracker:
     def __init__(self, config: Config):
         self.config = config
+        self.path_manager = PathManager(self.config)
 
     async def start(self):
         self.context = Context(
@@ -71,11 +73,55 @@ class Tracker:
         await self.updater.update(animation_id, channel_id)
         return AddAnimation.Response(animation_id=animation_id)
 
+    async def get_animations(self, request: GetAnimations.Request) -> GetAnimations.Response:
+        db = self.db_manager.db
+        animations = []
+        for animation in db.animations.values():
+            total_episode = 0
+            for ep in animation.channels[animation.current_channel].episodes:
+                if ep.download_status == DownloadStatus.Finished:
+                    total_episode += 1
+                else:
+                    break
+            animations.append(GetAnimations.AnimationInfo(
+                animation_id=animation.animation_id,
+                name=animation.name,
+                bangumi_id=animation.bangumi_id,
+                icon_url=animation.icon_url,
+                status=animation.status,
+                watched_episode=animation.watched_episode +
+                (1 if animation.watched_episode_time_percent >
+                 self.config.tracker.episode_watch_end_ratio else 0),
+                total_episode=total_episode,
+            ))
+        return GetAnimations.Response(animations=animations)
+
+    async def get_animation(self, request: GetAnimation.Request) -> GetAnimation.Response:
+        db = self.db_manager.db
+        animation = db.animations[request.animation_id]
+        episodes = []
+        for ep_index, ep in enumerate(animation.channels[animation.current_channel].episodes):
+            episodes.append(GetAnimation.EpisodeInfo(
+                name=ep.name,
+                url=str(self.path_manager.episode_web_path(
+                    db, animation.animation_id, animation.current_channel, ep_index)),
+            ))
+        return GetAnimation.Response(animation=GetAnimation.AnimationInfo(
+            animation_id=animation.animation_id,
+            name=animation.name,
+            bangumi_id=animation.bangumi_id,
+            icon_url=animation.icon_url,
+            status=animation.status,
+            watched_episode=animation.watched_episode,
+            watched_episode_time=animation.watched_episode_time,
+            episodes=episodes,
+        ))
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
 
-    async def test():
+    async def test1():
         try:
             os.remove("ani_track.db")
         except:
@@ -93,5 +139,13 @@ if __name__ == "__main__":
                 channel_source_key="girigirilove",
             )
             await tracker.add_animation(req)
-            await asyncio.sleep(200)
-    asyncio.run(test())
+            for i in range(100):
+                print(await tracker.get_animations(GetAnimations.Request()))
+                await asyncio.sleep(10)
+
+    async def test2():
+        tracker = Tracker(config)
+        async with tracker:
+            req = GetAnimation.Request(animation_id=1)
+            print(await tracker.get_animation(req))
+    asyncio.run(test2())

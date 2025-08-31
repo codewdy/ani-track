@@ -48,6 +48,9 @@ class Animation(BaseModel):
     channels: Dict[int, Channel]
     next_channel_id: int
     current_channel: int
+    watched_episode: int = 0
+    watched_episode_time: int = 0
+    watched_episode_time_percent: float = 0
 
 
 class DownloadError(BaseModel):

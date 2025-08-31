@@ -22,6 +22,7 @@ class TrackerConfig(BaseModel):
     update_interval: TimeDelta = "1d"
     max_download_concurrent: int = 5
     tmp_dir: str = "/tmp/ani_track"
+    episode_watch_end_ratio: float = 0.9
 
 
 class Config(BaseModel):
