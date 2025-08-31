@@ -1,5 +1,5 @@
 from schema.config import Config
-from schema.db import Animation, AnimationInfo, Channel, AnimationStatus
+from schema.db import Animation, Channel, AnimationStatus
 from schema.api import AddAnimation
 from tracker.db_manager import DBManager
 import asyncio
@@ -46,15 +46,13 @@ class Tracker:
                     "/" + ani_dirname + "/" + channel_dir, exist_ok=True)
 
         animation = Animation(
-            info=AnimationInfo(
-                animation_id=animation_id,
-                name=request.name,
-                bangumi_id=request.bangumi_id,
-                icon_url=request.icon_url,
-                resource_dir=resource_dir,
-                dirname=ani_dirname,
-                status=request.status,
-            ),
+            animation_id=animation_id,
+            name=request.name,
+            bangumi_id=request.bangumi_id,
+            icon_url=request.icon_url,
+            resource_dir=resource_dir,
+            dirname=ani_dirname,
+            status=request.status,
             channels={
                 channel_id: Channel(
                     name=request.channel_name,

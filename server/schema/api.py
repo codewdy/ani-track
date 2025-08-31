@@ -23,7 +23,7 @@ class GetAnimations:
         pass
 
     class Response(BaseModel):
-        animations: List[AnimationInfo]
+        animations: List[Animation]
 
 
 class GetAnimation:
