@@ -13,6 +13,10 @@ export default defineConfig({
   server: {
     host: '::',
     port: 5173, // Or your desired port
+    proxy: {
+      '/api': 'http://localhost:9876',
+      '/resource': 'http://localhost:9876'
+    },
   },
   resolve: {
     alias: {
