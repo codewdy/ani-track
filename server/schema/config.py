@@ -17,6 +17,7 @@ class ServiceConfig(BaseModel):
 
 
 class TrackerConfig(BaseModel):
+    db_file: str
     save_interval: TimeDelta = "1h"
     check_interval: TimeDelta = "1h"
     update_interval: TimeDelta = "1d"
@@ -29,4 +30,3 @@ class Config(BaseModel):
     resource: ResourceConfig
     service: ServiceConfig
     tracker: TrackerConfig
-    db_file: str

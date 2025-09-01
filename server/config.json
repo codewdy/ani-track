@@ -11,11 +11,11 @@
         "port": 8081
     },
     "tracker": {
+        "db_file": "ani_track.db",
         "save_interval": "1h",
         "check_interval": "1h",
         "update_interval": "1d",
         "max_download_concurrent": 5,
         "tmp_dir": "/tmp/ani_track"
-    },
-    "db_file": "ani_track.db"
+    }
 }

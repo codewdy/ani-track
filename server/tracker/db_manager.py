@@ -11,10 +11,13 @@ class DBManager:
         self._save_task = None
 
     async def start(self):
-        if os.path.exists(self.config.db_file):
-            self.db = AnimationDB.parse_file(self.config.db_file)
+        if os.path.exists(self.config.tracker.db_file):
+            self.db = AnimationDB.parse_file(self.config.tracker.db_file)
+            self._last_db_dump = self.dump_db()
         else:
             self.db = AnimationDB()
+            self._last_db_dump = ""
+            self.save(force=True)
         self._save_task = asyncio.create_task(self.save_loop())
 
     async def stop(self):
@@ -24,13 +27,23 @@ class DBManager:
                 await self._save_task
             except BaseException:
                 pass
+        self._save_task.cancel()
         self.save()
+        try:
+            await self._save_task
+        except asyncio.CancelledError:
+            pass
 
-    def save(self):
-        dbjson = self.db.model_dump_json(indent=2)
-        atomic_file_write(self.config.db_file, dbjson)
+    def dump_db(self):
+        return self.db.model_dump_json(indent=2)
 
     async def save_loop(self):
         while True:
             await asyncio.sleep(self.config.tracker.save_interval.total_seconds())
             self.save()
+
+    def save(self, force=False):
+        db_dump = self.dump_db()
+        if db_dump != self._last_db_dump or force:
+            atomic_file_write(self.config.tracker.db_file, db_dump)
+            self._last_db_dump = db_dump
