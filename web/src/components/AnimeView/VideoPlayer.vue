@@ -1,5 +1,5 @@
 <template>
-    <div :style="`width: 100%; max-width: ${width}px; margin: 0 auto; border: 1px solid black;`">
+    <div :style="`width: 100%; max-width: ${width}px; margin: 0 auto; border: 1px solid black; float: left;`">
         <div ref="videoRef"></div>
     </div>
 </template>
