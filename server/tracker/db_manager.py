@@ -29,10 +29,6 @@ class DBManager:
                 pass
         self._save_task.cancel()
         self.save()
-        try:
-            await self._save_task
-        except asyncio.CancelledError:
-            pass
 
     def dump_db(self):
         return self.db.model_dump_json(indent=2)
