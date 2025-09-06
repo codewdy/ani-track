@@ -2,7 +2,7 @@
     <n-space vertical>
         <p>搜索Bangumi:</p>
         <n-input v-model:value="search" @keyup.enter="search_bangumi" type="text" placeholder="三月的狮子"
-            style="max-width: 500px;" />
+            style="max-width: 800px;" />
         <n-button @click="search_bangumi" :disabled="search.length === 0">搜索</n-button>
         <n-select :loading="loading" v-model:value="selected_value" :options="search_result" placeholder="请选择"
             style="max-width: 800px;">
