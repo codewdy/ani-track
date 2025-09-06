@@ -3,6 +3,17 @@ from schema.db import AnimationStatus
 from typing import List, Optional
 
 
+__all__ = [
+    "AddAnimation",
+    "GetAnimations",
+    "GetAnimation",
+    "GetDownloadManagerStatus",
+    "SearchBangumi",
+    "SearchChannel",
+    "UpdateAnimation",
+]
+
+
 class AddAnimation:
     class Request(BaseModel):
         name: str
@@ -81,6 +92,30 @@ class SearchBangumi:
         id: int
         name: str
         image: str
+
+
+class SearchChannel:
+    class Request(BaseModel):
+        keyword: str
+
+    class Response(BaseModel):
+        channels: List['SearchChannel.ChannelInfo']
+        search_errors: List['SearchChannel.SearchErrorInfo']
+
+    class ChannelInfo(BaseModel):
+        name: str
+        search_name: str
+        url: str
+        source_key: str
+        episodes: List['SearchChannel.EpisodeInfo']
+
+    class EpisodeInfo(BaseModel):
+        name: str
+        url: str
+
+    class SearchErrorInfo(BaseModel):
+        source: str
+        error: str
 
 
 class UpdateAnimation:

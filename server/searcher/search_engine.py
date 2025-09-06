@@ -1,6 +1,7 @@
 from searcher.searcher_list import searcher_list, searcher_dict
 import asyncio
 import aiohttp
+import traceback
 
 
 class SearchFunctor:
@@ -9,12 +10,12 @@ class SearchFunctor:
 
     async def __call__(self, searcher):
         try:
-            return await searcher.search(self.keyword)
+            return await searcher.search(self.keyword), []
 
         except Exception as e:
-            return [
+            return [], [
                 {
-                    "error": str(e),
+                    "error": traceback.format_exc(),
                     "name": searcher.name,
                     "icon": searcher.icon,
                 }
@@ -34,7 +35,7 @@ class SearchEngine:
             )
         )
 
-        return sum(results, [])
+        return sum([res[0] for res in results], []), sum([res[1] for res in results], [])
 
     async def search_episode(self, source_key, url, channel_name):
         return await self.searcher_dict[source_key].search_episode(url, channel_name)
@@ -42,6 +43,7 @@ class SearchEngine:
 
 if __name__ == "__main__":
     from context import Context
+    import json
 
     search_engine = SearchEngine()
 
@@ -49,3 +51,5 @@ if __name__ == "__main__":
         async with Context() as ctx:
             return await search_engine.search("碧蓝之海")
     print(asyncio.run(run()))
+    open("result.json", "w").write(json.dumps(
+        asyncio.run(run()), ensure_ascii=False))

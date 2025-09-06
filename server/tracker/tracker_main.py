@@ -1,6 +1,6 @@
 from schema.config import Config
 from schema.db import Animation, Channel, AnimationStatus, DownloadStatus
-from schema.api import AddAnimation, GetAnimations, GetAnimation, GetDownloadManagerStatus, SearchBangumi
+from schema.api import *
 from tracker.db_manager import DBManager
 import asyncio
 import os
@@ -9,12 +9,14 @@ from tracker.updater import Updater
 from tracker.path_manager import PathManager
 from bangumi import bangumi
 from utils.simple_service import SimpleService
+from searcher.search_engine import SearchEngine
 
 
 class Tracker(SimpleService):
     def __init__(self, config: Config):
         self.config = config
         self.path_manager = PathManager(self.config)
+        self.search_engine = SearchEngine()
 
     async def start(self):
         self.context = Context(
@@ -154,6 +156,32 @@ class Tracker(SimpleService):
             for item in search_result
         ])
 
+    @SimpleService.api
+    async def search_channel(self, request: SearchChannel.Request) -> SearchChannel.Response:
+        search_result, search_error = await self.search_engine.search(request.keyword)
+        response = SearchChannel.Response(channels=[], search_errors=[])
+        for source_search_result in search_result:
+            for item in source_search_result["channel"]:
+                response.channels.append(SearchChannel.ChannelInfo(
+                    name=f"{source_search_result['name']} - {item['name']} - {source_search_result['source']}",
+                    search_name=item["name"],
+                    url=source_search_result["link"],
+                    source_key=source_search_result["sourceKey"],
+                    episodes=[
+                        SearchChannel.EpisodeInfo(
+                            name=ep["episode"],
+                            url=ep["episode_link"],
+                        )
+                        for ep in item["episodes"]
+                    ],
+                ))
+        for error in search_error:
+            response.search_errors.append(SearchChannel.SearchErrorInfo(
+                source=error["name"],
+                error=error["error"],
+            ))
+        return response
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
@@ -192,4 +220,10 @@ if __name__ == "__main__":
         async with tracker:
             req = SearchBangumi.Request(keyword="测试")
             print(await tracker.search_bangumi(req))
-    asyncio.run(test3())
+
+    async def test4():
+        tracker = Tracker(config)
+        async with tracker:
+            req = SearchChannel.Request(keyword="碧蓝之海")
+            print(await tracker.search_channel(req))
+    asyncio.run(test4())
