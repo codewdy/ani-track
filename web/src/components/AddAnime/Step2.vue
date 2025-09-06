@@ -9,7 +9,7 @@
                 <n-radio-button v-for="item in search_result" :key="item.name" :value="item" :label="item.name" />
             </n-space>
         </n-radio-group>
-        <n-space v-if="selected_value">
+        <n-space v-show="selected_value">
             <img :src="selected_value?.image" alt="" style="max-width: 200px;" />
             <n-space vertical>
                 <p>名称: {{ selected_value?.name }}</p>
