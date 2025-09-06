@@ -225,5 +225,6 @@ if __name__ == "__main__":
         tracker = Tracker(config)
         async with tracker:
             req = SearchChannel.Request(keyword="碧蓝之海")
-            print(await tracker.search_channel(req))
-    asyncio.run(test4())
+            return await tracker.search_channel(req)
+    open("result.json", "w").write(
+        asyncio.run(test4()).model_dump_json(indent=2))
