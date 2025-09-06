@@ -3,6 +3,11 @@ from pydantic.functional_validators import AfterValidator, BeforeValidator
 from datetime import datetime, timedelta
 from pandas import Timedelta
 
+
+def to_timedelta(x):
+    return Timedelta(x).to_pytimedelta()
+
+
 DateTimeWithTimeZone = Annotated[
     datetime,
     AfterValidator(lambda x: x.astimezone()),
@@ -10,5 +15,5 @@ DateTimeWithTimeZone = Annotated[
 
 TimeDelta = Annotated[
     timedelta,
-    BeforeValidator(lambda x: Timedelta(x).to_pytimedelta()),
+    BeforeValidator(to_timedelta),
 ]
