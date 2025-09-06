@@ -37,7 +37,7 @@ function createAnimeItem(item) {
 
 const menuOptions = computed(() => [
     createItem('/wdy', () => '动画列表', HomeOutline),
-    createItem('/config', '添加动画', SettingsOutline),
+    createItem('/add-anime', '添加动画', SettingsOutline),
     {
         label: '动画',
         key: 'anime-view',
