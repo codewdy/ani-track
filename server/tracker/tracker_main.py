@@ -76,6 +76,7 @@ class Tracker(SimpleService):
         )
         db.animations[animation_id] = animation
         await self.updater.update(animation_id, channel_id)
+        self.db_manager.save()
         return AddAnimation.Response(animation_id=animation_id)
 
     @SimpleService.api
