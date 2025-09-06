@@ -19,7 +19,7 @@ async def search(keyword: str):
     result = []
     for item in data["data"]:
         result.append({
-            "id": item["id"],
+            "id": str(item["id"]),
             "name": item["name_cn"] or item["name"],
             "image": item["image"],
         })

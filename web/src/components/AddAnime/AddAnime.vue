@@ -2,19 +2,24 @@
     <n-space vertical>
         <Step :max-step="max_step" v-model:step="step" :step1="step1" :step2="step2" :step3="step3" :step4="step4" />
         <n-divider />
-        <Step1 v-show="step === 1" @submit="step1_submit" />
-        <Step2 v-show="step === 2" @submit="step2_submit" v-model:search="search_1" />
-        <Step3 v-show="step === 3" @submit="step3_submit" v-model:search="search_2" />
+        <Step1 v-show="step === 1" @submit="step1_submit" :key="key" />
+        <Step2 v-show="step === 2" @submit="step2_submit" v-model:search="search_1" :key="key" />
+        <Step3 v-show="step === 3" @submit="step3_submit" v-model:search="search_2" :key="key" />
+        <Step4 v-show="step === 4" @submit="step4_submit" :animation="animation" :bangumi="bangumi" :channel="channel"
+            :key="key" />
     </n-space>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import Step from './Step.vue'
-import { NSpace, NDivider } from 'naive-ui'
+import { NSpace, NDivider, useMessage } from 'naive-ui'
+import axios from 'axios'
 import Step1 from './Step1.vue';
 import Step2 from './Step2.vue';
 import Step3 from './Step3.vue';
+import Step4 from './Step4.vue';
+const message = useMessage()
 
 const step = ref(1)
 const step1 = ref("")
@@ -27,6 +32,8 @@ const search_2 = ref("")
 const animation = ref("")
 const bangumi = ref(null)
 const channel = ref(null)
+const key = ref(0)
+
 
 function step1_submit(name) {
     if (max_step.value === 1) {
@@ -51,6 +58,40 @@ function step3_submit(search) {
     max_step.value = Math.max(max_step.value, 4)
     step.value = 4
     channel.value = search
+}
+
+function step4_submit() {
+    const messageReactive = message.loading("提交中", {
+        duration: 0
+    });
+    axios.post("/api/add_animation", {
+        name: animation.value,
+        bangumi_id: bangumi.value.id,
+        icon_url: bangumi.value.image,
+        status: "wanted",
+        channel_name: channel.value.name,
+        channel_search_name: channel.value.search_name,
+        channel_url: channel.value.url,
+        channel_source_key: channel.value.source_key,
+    }).catch(err => {
+        messageReactive.destroy()
+        message.error("提交失败: " + err.message)
+    }).then(res => {
+        messageReactive.destroy()
+        message.success("提交成功")
+        key.value = key.value + 1
+        step.value = 1
+        step1.value = ""
+        step2.value = ""
+        step3.value = ""
+        step4.value = ""
+        max_step.value = 1
+        search_1.value = ""
+        search_2.value = ""
+        animation.value = ""
+        bangumi.value = null
+        channel.value = null
+    })
 }
 
 </script>

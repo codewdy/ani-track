@@ -39,6 +39,7 @@ function search_bangumi() {
     axios.post("/api/search_bangumi", {
         keyword: search.value
     }).catch(err => {
+        loading.value = false
         messageReactive.destroy()
         message.error("搜索失败: " + err.message)
     }).then(res => {

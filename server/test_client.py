@@ -10,8 +10,10 @@ async def request(session, url, req):
 
 async def test2():
     async with ClientSession() as session:
-        req = GetAnimation.Request(animation_id=1)
-        print(await request(session, "http://localhost:9876/api/get_animation", req))
+        while True:
+            req = GetDownloadManagerStatus.Request()
+            print(await request(session, "http://localhost:5373/api/get_download_manager_status", req))
+            await asyncio.sleep(1)
 
 
 asyncio.run(test2())

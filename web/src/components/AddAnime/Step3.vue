@@ -40,6 +40,7 @@ function search_channel() {
     axios.post("/api/search_channel", {
         keyword: search.value
     }).catch(err => {
+        loading.value = false
         messageReactive.destroy()
         message.error("搜索失败: " + err.message)
     }).then(res => {

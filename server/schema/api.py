@@ -89,7 +89,7 @@ class SearchBangumi:
         animations: List['SearchBangumi.AnimationInfo']
 
     class AnimationInfo(BaseModel):
-        id: int
+        id: str
         name: str
         image: str
 
