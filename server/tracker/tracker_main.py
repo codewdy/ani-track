@@ -139,7 +139,7 @@ class Tracker(SimpleService):
             pending=[
                 GetDownloadManagerStatus.DownloadTask(
                     resource_name=task.meta["resource_name"],
-                    status=None,
+                    status="Pending",
                 )
                 for task in status["pending"]
             ],

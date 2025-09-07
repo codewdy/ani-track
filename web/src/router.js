@@ -3,6 +3,7 @@ import AnimeView from '@/components/AnimeView/AnimeView.vue';
 import NotFound from '@/components/NotFound.vue';
 import AnimeList from '@/components/AnimeList/AnimeList.vue';
 import AddAnime from '@/components/AddAnime/AddAnime.vue';
+import DownloadStatus from '@/components/DownloadStatus/DownloadStatus.vue';
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     path: '/wdy',
     name: 'wdy',
     component: AnimeList,
+  },
+  {
+    path: '/download',
+    name: 'download',
+    component: DownloadStatus,
   },
   {
     path: '/anime-view/:id',

@@ -10,7 +10,7 @@
 
 import { NMenu, NIcon, NLayoutSider, NBadge } from 'naive-ui'
 import { ref, h, computed } from 'vue'
-import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline } from '@vicons/ionicons5'
+import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline, ArrowDownCircleOutline } from '@vicons/ionicons5'
 
 
 import { RouterLink, useRoute } from 'vue-router'
@@ -38,6 +38,7 @@ function createAnimeItem(item) {
 const menuOptions = computed(() => [
     createItem('/wdy', () => '动画列表', HomeOutline),
     createItem('/add-anime', '添加动画', SettingsOutline),
+    createItem('/download', '下载进度', ArrowDownCircleOutline),
     {
         label: '动画',
         key: 'anime-view',
