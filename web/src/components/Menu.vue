@@ -3,19 +3,16 @@
         show-trigger @collapse="collapsed = true" @expand="collapsed = false">
         <n-menu :collapsed="collapsed" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions"
             :expand-icon="expandIcon" :value="value()" :default-expanded-keys="['anime-view']" />
-
     </n-layout-sider>
 </template>
-<script setup>
 
+<script setup>
 import { NMenu, NIcon, NLayoutSider, NBadge } from 'naive-ui'
 import { ref, h, computed } from 'vue'
 import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline, ArrowDownCircleOutline } from '@vicons/ionicons5'
 
-
 import { RouterLink, useRoute } from 'vue-router'
 import { animeState } from '@/common_state.js'
-
 
 const route = useRoute()
 
