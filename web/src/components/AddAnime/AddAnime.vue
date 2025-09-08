@@ -2,11 +2,11 @@
     <n-space vertical>
         <Step :max-step="max_step" v-model:step="step" :step1="step1" :step2="step2" :step3="step3" :step4="step4" />
         <n-divider />
-        <Step1 v-show="step === 1" @submit="step1_submit" :key="key" />
-        <Step2 v-show="step === 2" @submit="step2_submit" v-model:search="search_1" :key="key" />
-        <Step3 v-show="step === 3" @submit="step3_submit" v-model:search="search_2" :key="key" />
-        <Step4 v-show="step === 4" @submit="step4_submit" :animation="animation" :bangumi="bangumi" :channel="channel"
-            :key="key" />
+        <Step1 v-show="step === 1" @submit="step1_submit" />
+        <Step2 v-show="step === 2" @submit="step2_submit" v-model:search="search_1" />
+        <Step3 v-show="step === 3" @submit="step3_submit" v-model:search="search_2" />
+        <Step4 v-show="step === 4" @submit="step4_submit" :animation="animation" :bangumi="bangumi"
+            :channel="channel" />
     </n-space>
 </template>
 
@@ -21,6 +21,7 @@ import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 const message = useMessage()
 
+const emit = defineEmits(["done"])
 const step = ref(1)
 const step1 = ref("")
 const step2 = ref("")
@@ -32,7 +33,6 @@ const search_2 = ref("")
 const animation = ref("")
 const bangumi = ref(null)
 const channel = ref(null)
-const key = ref(0)
 
 
 function step1_submit(name) {
@@ -79,18 +79,7 @@ function step4_submit() {
     }).then(res => {
         messageReactive.destroy()
         message.success("提交成功")
-        key.value = key.value + 1
-        step.value = 1
-        step1.value = ""
-        step2.value = ""
-        step3.value = ""
-        step4.value = ""
-        max_step.value = 1
-        search_1.value = ""
-        search_2.value = ""
-        animation.value = ""
-        bangumi.value = null
-        channel.value = null
+        emit("done")
     })
 }
 
