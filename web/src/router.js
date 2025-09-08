@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import AnimeView from '@/components/AnimeView/AnimeView.vue';
 import NotFound from '@/components/NotFound.vue';
 import AnimeList from '@/components/AnimeList/AnimeList.vue';
-import AddAnime from '@/components/AddAnime/AddAnime.vue';
+import AddAnimeContainer from '@/components/AddAnime/AddAnimeContainer.vue';
 import DownloadStatus from '@/components/DownloadStatus/DownloadStatus.vue';
 
 const routes = [
@@ -28,7 +28,7 @@ const routes = [
   {
     path: '/add-anime',
     name: 'add-anime',
-    component: AddAnime,
+    component: AddAnimeContainer,
   },
   {
     path: '/:pathMatch(.*)*',

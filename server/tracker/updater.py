@@ -49,12 +49,30 @@ class Updater:
     def download_done(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Finished
+        self.db_manager.mark_dirty()
 
     def download_failed(self, animation_id, channel_id, episode_id, error):
         db = self.db_manager.db
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Failed
-        db.animations[animation_id].channels[channel_id].episodes[episode_id].download_error = str(
-            error)
+        db.animations[animation_id].channels[channel_id].episodes[episode_id].download_error = error
+        self.db_manager.mark_dirty()
+
+    def submit_download(self, animation_id, channel_id, episode_id):
+        db = self.db_manager.db
+        episode = db.animations[animation_id].channels[channel_id].episodes[episode_id]
+        self.download_manager.submit(DownloadTask(
+            sourceKey=db.animations[animation_id].channels[channel_id].source_key,
+            url=episode.url,
+            dst=str(self.path_manager.episode_path(
+                db, animation_id, channel_id, episode_id)),
+            meta={
+                "resource_name": self.path_manager.resource_name(db, animation_id, channel_id, episode_id),
+            },
+            on_finished=partial(self.download_done,
+                                animation_id, channel_id, episode_id),
+            on_error=partial(self.download_failed,
+                             animation_id, channel_id, episode_id),
+        ))
 
     async def download_all(self):
         db = self.db_manager.db
@@ -63,19 +81,8 @@ class Updater:
             channel = animation.channels[channel_id]
             for idx, episode in enumerate(channel.episodes):
                 if episode.download_status == DownloadStatus.Running:
-                    self.download_manager.submit(DownloadTask(
-                        sourceKey=channel.source_key,
-                        url=episode.url,
-                        dst=str(self.path_manager.episode_path(
-                            db, animation.animation_id, channel_id, idx)),
-                        meta={
-                            "resource_name": self.path_manager.resource_name(db, animation.animation_id, channel_id, idx),
-                        },
-                        on_finished=partial(self.download_done,
-                                            animation.animation_id, channel_id, idx),
-                        on_error=partial(self.download_failed,
-                                         animation.animation_id, channel_id, idx),
-                    ))
+                    self.submit_download(
+                        animation.animation_id, channel_id, idx)
 
     async def update(self, animation_id, channel_id):
         db = self.db_manager.db
@@ -83,7 +90,7 @@ class Updater:
             deep=True)
         episode = await self.search_engine.search_episode(
             channel.source_key, channel.url, channel.search_name)
-        download_task = []
+        update_episodes = []
         db = self.db_manager.db
         mutable_animation = db.animations[animation_id]
         mutable_channel = mutable_animation.channels[channel_id]
@@ -94,22 +101,12 @@ class Updater:
                 filename=f"{i+1}.mp4",
                 download_status=DownloadStatus.Running,
             ))
-            download_task.append(DownloadTask(
-                sourceKey=mutable_channel.source_key,
-                url=episode["episodes"][i]["episode_link"],
-                dst=str(self.path_manager.episode_path(
-                    db, animation_id, channel_id, i)),
-                meta={
-                    "resource_name": self.path_manager.resource_name(db, animation_id, channel_id, i),
-                },
-                on_finished=partial(self.download_done,
-                                    animation_id, channel_id, i),
-                on_error=partial(self.download_failed,
-                                 animation_id, channel_id, i),
-            ))
-            mutable_channel.latest_real_update = datetime.now()
-        mutable_channel.latest_update = datetime.now()
+            update_episodes.append(i)
+            mutable_channel.latest_real_update = datetime.now().astimezone()
+            self.db_manager.mark_dirty()
+        mutable_channel.latest_update = datetime.now().astimezone()
         if mutable_channel.latest_update - mutable_channel.latest_real_update > self.config.tracker.untrack_timeout:
             mutable_channel.tracking = False
-        for task in download_task:
-            self.download_manager.submit(task)
+            self.db_manager.mark_dirty()
+        for i in update_episodes:
+            self.submit_download(animation_id, channel_id, i)
