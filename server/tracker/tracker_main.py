@@ -20,7 +20,7 @@ class Tracker(SimpleService):
 
     async def start(self):
         self.context = Context(
-            use_browser=True, tmp_dir=self.config.tracker.tmp_dir)
+            use_browser=True, tmp_dir=self.config.download.tmp_dir)
         await self.context.__aenter__()
         self.db_manager = DBManager(self.config)
         self.updater = Updater(self.config, self.db_manager)

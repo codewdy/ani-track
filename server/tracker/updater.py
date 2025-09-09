@@ -17,7 +17,7 @@ class Updater:
         self.config = config
         self.db_manager = db_manager
         self.download_manager = DownloadManager(
-            self.config.tracker.max_download_concurrent)
+            self.config.download.concurrent)
         self.search_engine = SearchEngine()
         self.path_manager = PathManager(self.config)
 
@@ -78,6 +78,9 @@ class Updater:
                                 animation_id, channel_id, episode_id),
             on_error=partial(self.download_failed,
                              animation_id, channel_id, episode_id),
+            retry=self.config.download.retry,
+            retry_interval=self.config.download.retry_interval.total_seconds(),
+            timeout=self.config.download.timeout.total_seconds(),
         ))
 
     async def download_all(self):

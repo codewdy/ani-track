@@ -15,7 +15,14 @@
         "save_interval": "1h",
         "check_interval": "1h",
         "update_interval": "1h",
-        "max_download_concurrent": 5,
+        "untrack_timeout": "30d",
+        "episode_watch_end_ratio": 0.9
+    },
+    "download": {
+        "concurrent": 5,
+        "retry": 5,
+        "retry_interval": "1m",
+        "timeout": "1h",
         "tmp_dir": "/tmp/ani_track"
     }
 }

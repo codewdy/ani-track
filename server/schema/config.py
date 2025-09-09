@@ -22,12 +22,19 @@ class TrackerConfig(BaseModel):
     check_interval: TimeDelta = to_timedelta("1h")
     update_interval: TimeDelta = to_timedelta("1h")
     untrack_timeout: TimeDelta = to_timedelta("30d")
-    max_download_concurrent: int = 5
-    tmp_dir: str = "/tmp/ani_track"
     episode_watch_end_ratio: float = 0.9
+
+
+class DownloadConfig(BaseModel):
+    concurrent: int = 5
+    retry: int = 5
+    retry_interval: TimeDelta = to_timedelta("1m")
+    timeout: TimeDelta = to_timedelta("1h")
+    tmp_dir: str = "/tmp/ani_track"
 
 
 class Config(BaseModel):
     resource: ResourceConfig
     service: ServiceConfig
     tracker: TrackerConfig
+    download: DownloadConfig
