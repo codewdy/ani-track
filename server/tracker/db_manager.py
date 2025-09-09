@@ -2,6 +2,7 @@ from schema.db import AnimationDB
 from utils.atomic_file_write import atomic_file_write
 import os
 import asyncio
+import uuid
 
 
 class DBManager:
@@ -10,6 +11,7 @@ class DBManager:
         self.db = None
         self._save_task = None
         self._dirty = False
+        self.version = self.uuid()
 
     async def start(self):
         if os.path.exists(self.config.tracker.db_file):
@@ -33,6 +35,9 @@ class DBManager:
             pass
         self.save()
 
+    def uuid(self):
+        return str(uuid.uuid4())
+
     def dump_db(self):
         return self.db.model_dump_json(indent=2)
 
@@ -42,6 +47,7 @@ class DBManager:
             self.save()
 
     def mark_dirty(self):
+        self.version = self.uuid()
         self._dirty = True
 
     def save(self, force=False):

@@ -40,9 +40,11 @@ class GetAnimations:
         total_episode: int
 
     class Request(BaseModel):
-        pass
+        version: str
 
     class Response(BaseModel):
+        is_new: bool
+        version: str
         animations: List['GetAnimations.AnimationInfo']
 
 

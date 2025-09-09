@@ -20,7 +20,7 @@ class TrackerConfig(BaseModel):
     db_file: str
     save_interval: TimeDelta = to_timedelta("1h")
     check_interval: TimeDelta = to_timedelta("1h")
-    update_interval: TimeDelta = to_timedelta("1d")
+    update_interval: TimeDelta = to_timedelta("1h")
     untrack_timeout: TimeDelta = to_timedelta("30d")
     max_download_concurrent: int = 5
     tmp_dir: str = "/tmp/ani_track"

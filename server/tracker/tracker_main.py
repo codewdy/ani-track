@@ -82,6 +82,9 @@ class Tracker(SimpleService):
     @SimpleService.api
     async def get_animations(self, request: GetAnimations.Request) -> GetAnimations.Response:
         db = self.db_manager.db
+        is_new = request.version != self.db_manager.version
+        if not is_new:
+            return GetAnimations.Response(is_new=False, version=self.db_manager.version, animations=[])
         animations = []
         for animation in db.animations.values():
             total_episode = 0
@@ -101,7 +104,7 @@ class Tracker(SimpleService):
                  self.config.tracker.episode_watch_end_ratio else 0),
                 total_episode=total_episode,
             ))
-        return GetAnimations.Response(animations=animations)
+        return GetAnimations.Response(is_new=True, version=self.db_manager.version, animations=animations)
 
     @SimpleService.api
     async def get_animation(self, request: GetAnimation.Request) -> GetAnimation.Response:
@@ -213,8 +216,8 @@ if __name__ == "__main__":
     async def test2():
         tracker = Tracker(config)
         async with tracker:
-            req = GetAnimation.Request(animation_id=1)
-            print(await tracker.get_animation(req))
+            req = GetAnimations.Request(version="")
+            return await tracker.get_animations(req)
 
     async def test3():
         tracker = Tracker(config)
@@ -228,4 +231,4 @@ if __name__ == "__main__":
             req = SearchChannel.Request(keyword="碧蓝之海")
             return await tracker.search_channel(req)
     open("result.json", "w").write(
-        asyncio.run(test4()).model_dump_json(indent=2))
+        asyncio.run(test2()).model_dump_json(indent=2))

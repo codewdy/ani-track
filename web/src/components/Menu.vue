@@ -8,13 +8,14 @@
 
 <script setup>
 import { NMenu, NIcon, NLayoutSider, NBadge } from 'naive-ui'
-import { ref, h, computed } from 'vue'
+import { ref, h, computed, inject } from 'vue'
 import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline, ArrowDownCircleOutline } from '@vicons/ionicons5'
 
 import { RouterLink, useRoute } from 'vue-router'
 import { animeState } from '@/common_state.js'
 
 const route = useRoute()
+const animations = inject('animations')
 
 function createItem(to, v, icon) {
     return {
@@ -26,9 +27,9 @@ function createItem(to, v, icon) {
 
 function createAnimeItem(item) {
     return {
-        label: () => h(RouterLink, { to: "/anime-view/" + item.id }, item.name),
-        key: "/anime-view/" + item.id,
-        icon: () => h(NBadge, { value: item.downloaded - item.watched }, h(NIcon, null, { default: () => h(CaretForwardCircleOutline) }))
+        label: () => h(RouterLink, { to: "/anime-view/" + item.animation_id }, item.name),
+        key: "/anime-view/" + item.animation_id,
+        icon: () => h(NBadge, { value: item.total_episode - item.watched_episode }, h(NIcon, null, { default: () => h(CaretForwardCircleOutline) }))
     }
 }
 
@@ -40,7 +41,7 @@ const menuOptions = computed(() => [
         label: '动画',
         key: 'anime-view',
         icon: () => h(NIcon, null, { default: () => h(LayersOutline) }),
-        children: animeState.anime.map(createAnimeItem)
+        children: animations.value.map(createAnimeItem)
     }
 ])
 const collapsed = ref(false)

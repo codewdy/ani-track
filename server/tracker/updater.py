@@ -56,7 +56,7 @@ class Updater:
     def download_failed(self, animation_id, channel_id, episode_id, error):
         db = self.db_manager.db
         print("Dowload failed: ", self.path_manager.resource_name(
-            db, animation_id, channel_id, episode_id))
+            db, animation_id, channel_id, episode_id), error)
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Failed
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_error = error
         self.db_manager.mark_dirty()
