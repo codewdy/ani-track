@@ -75,7 +75,7 @@ class Tracker(SimpleService):
             current_channel=channel_id,
         )
         db.animations[animation_id] = animation
-        await self.updater.update(animation_id, channel_id)
+        await self.updater.update(animation_id, channel_id, force=True)
         self.db_manager.save(force=True)
         return AddAnimation.Response(animation_id=animation_id)
 

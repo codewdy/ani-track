@@ -13,6 +13,9 @@ class PathManager:
     def animation_path(self, db, animation_id):
         return self.resource_path(db, animation_id) / db.animations[animation_id].dirname
 
+    def animation_db_path(self, db, animation_id):
+        return self.animation_path(db, animation_id) / "db.json"
+
     def channel_path(self, db, animation_id, channel_id):
         return self.animation_path(db, animation_id) / db.animations[animation_id].channels[channel_id].dirname
 
