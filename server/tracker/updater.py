@@ -48,11 +48,15 @@ class Updater:
 
     def download_done(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
+        print("Dowload done: ", self.path_manager.resource_name(
+            db, animation_id, channel_id, episode_id))
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Finished
         self.db_manager.mark_dirty()
 
     def download_failed(self, animation_id, channel_id, episode_id, error):
         db = self.db_manager.db
+        print("Dowload failed: ", self.path_manager.resource_name(
+            db, animation_id, channel_id, episode_id))
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Failed
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_error = error
         self.db_manager.mark_dirty()
@@ -60,6 +64,8 @@ class Updater:
     def submit_download(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
         episode = db.animations[animation_id].channels[channel_id].episodes[episode_id]
+        print("Dowloading: ", self.path_manager.resource_name(
+            db, animation_id, channel_id, episode_id))
         self.download_manager.submit(DownloadTask(
             sourceKey=db.animations[animation_id].channels[channel_id].source_key,
             url=episode.url,
@@ -103,10 +109,9 @@ class Updater:
             ))
             update_episodes.append(i)
             mutable_channel.latest_real_update = datetime.now().astimezone()
-            self.db_manager.mark_dirty()
         mutable_channel.latest_update = datetime.now().astimezone()
         if mutable_channel.latest_update - mutable_channel.latest_real_update > self.config.tracker.untrack_timeout:
             mutable_channel.tracking = False
-            self.db_manager.mark_dirty()
+        self.db_manager.mark_dirty()
         for i in update_episodes:
             self.submit_download(animation_id, channel_id, i)
