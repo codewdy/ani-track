@@ -41,6 +41,18 @@ class DBManager:
     def dump_db(self):
         return self.db.model_dump_json(indent=2)
 
+    def dump_partial_db(self, resource_dir):
+        dbx = AnimationDB()
+        animation_ids = set()
+        for id, a in self.db.animations.items():
+            if a.resource_dir == resource_dir:
+                animation_ids.add(id)
+                dbx.animations[id] = a
+        for error in self.db.download_errors:
+            if error.animation_id in animation_ids:
+                dbx.download_errors.append(error)
+        return dbx.model_dump_json(indent=2)
+
     async def save_loop(self):
         while True:
             await asyncio.sleep(self.config.tracker.save_interval.total_seconds())
@@ -55,3 +67,7 @@ class DBManager:
             self._dirty = False
             db_dump = self.dump_db()
             atomic_file_write(self.config.tracker.db_file, db_dump)
+            for resource_dir, path in self.config.resource.dirs.items():
+                db_dump = self.dump_partial_db(resource_dir)
+                atomic_file_write(os.path.join(
+                    path, "ani_track.db"), db_dump)
