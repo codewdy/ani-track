@@ -18,8 +18,7 @@ class ServiceConfig(BaseModel):
 
 class TrackerConfig(BaseModel):
     db_file: str
-    save_interval: TimeDelta = to_timedelta("1h")
-    check_interval: TimeDelta = to_timedelta("1h")
+    save_interval: TimeDelta = to_timedelta("1m")
     update_interval: TimeDelta = to_timedelta("1h")
     untrack_timeout: TimeDelta = to_timedelta("30d")
     episode_watch_end_ratio: float = 0.9

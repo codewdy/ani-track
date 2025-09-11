@@ -28,7 +28,6 @@ class Channel(BaseModel):
     dirname: str
     tracking: bool
     latest_update: DateTimeWithTimeZone
-    latest_real_update: DateTimeWithTimeZone = datetime.datetime(1970, 1, 1)
     episodes: List[Episode]
 
 

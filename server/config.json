@@ -12,8 +12,7 @@
     },
     "tracker": {
         "db_file": "ani_track.db",
-        "save_interval": "1h",
-        "check_interval": "1h",
+        "save_interval": "1m",
         "update_interval": "1h",
         "untrack_timeout": "30d",
         "episode_watch_end_ratio": 0.9

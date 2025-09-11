@@ -34,11 +34,6 @@ class Updater:
             pass
         await self.download_manager.stop()
 
-    def save_state(self, animation_id):
-        db = self.db_manager.db
-        atomic_file_write(str(self.path_manager.animation_db_path(
-            db, animation_id)), db.animations[animation_id].model_dump_json(indent=2))
-
     async def update_loop(self):
         while True:
             await self.update_all()
@@ -48,9 +43,7 @@ class Updater:
         db = self.db_manager.db
         for animation in db.animations.values():
             channel_id = animation.current_channel
-            channel = animation.channels[channel_id]
-            if channel.tracking and datetime.now().astimezone() - channel.latest_update > self.config.tracker.update_interval:
-                await self.update(animation.animation_id, channel_id)
+            await self.update(animation.animation_id, channel_id)
 
     def download_done(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
@@ -58,7 +51,6 @@ class Updater:
             db, animation_id, channel_id, episode_id))
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Finished
         self.db_manager.mark_dirty()
-        self.save_state(animation.animation_id)
 
     def download_failed(self, animation_id, channel_id, episode_id, error):
         db = self.db_manager.db
@@ -67,7 +59,6 @@ class Updater:
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_status = DownloadStatus.Failed
         db.animations[animation_id].channels[channel_id].episodes[episode_id].download_error = error
         self.db_manager.mark_dirty()
-        self.save_state(animation.animation_id)
 
     def submit_download(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
@@ -101,7 +92,7 @@ class Updater:
                     self.submit_download(
                         animation.animation_id, channel_id, idx)
 
-    async def update(self, animation_id, channel_id, force=False):
+    async def update(self, animation_id, channel_id):
         db = self.db_manager.db
         channel = db.animations[animation_id].channels[channel_id].model_copy(
             deep=True)
@@ -119,12 +110,10 @@ class Updater:
                 download_status=DownloadStatus.Running,
             ))
             update_episodes.append(i)
-            mutable_channel.latest_real_update = datetime.now().astimezone()
-        mutable_channel.latest_update = datetime.now().astimezone()
-        if mutable_channel.latest_update - mutable_channel.latest_real_update > self.config.tracker.untrack_timeout:
+            mutable_channel.latest_update = datetime.now().astimezone()
+            self.db_manager.mark_dirty()
+        if datetime.now().astimezone() - mutable_channel.latest_update > self.config.tracker.untrack_timeout:
             mutable_channel.tracking = False
-        self.db_manager.mark_dirty()
-        if len(update_episodes) > 0 or force:
-            self.save_state(animation_id)
+            self.db_manager.mark_dirty()
         for i in update_episodes:
             self.submit_download(animation_id, channel_id, i)
