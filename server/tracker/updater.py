@@ -10,7 +10,7 @@ from datetime import datetime
 from downloader.download_task import DownloadTask
 from tracker.path_manager import PathManager
 from functools import partial
-from utils.atomic_file_write import atomic_file_write
+from utils.filename_allocate import allocate_filename
 
 
 class Updater:
@@ -106,7 +106,8 @@ class Updater:
             mutable_channel.episodes.append(Episode(
                 name=episode["episodes"][i]["episode"],
                 url=episode["episodes"][i]["episode_link"],
-                filename=f"{i+1}.mp4",
+                filename=allocate_filename(
+                    f"{episode["episodes"][i]["episode"]}.mp4", [x.filename for x in mutable_channel.episodes]),
                 download_status=DownloadStatus.Running,
             ))
             update_episodes.append(i)

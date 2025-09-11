@@ -10,6 +10,7 @@ from tracker.path_manager import PathManager
 from bangumi import bangumi
 from utils.simple_service import SimpleService
 from searcher.search_engine import SearchEngine
+from utils.filename_allocate import allocate_filename
 
 
 class Tracker(SimpleService):
@@ -46,8 +47,9 @@ class Tracker(SimpleService):
         db.next_animation_id = db.next_animation_id + 1
 
         resource_dir = self.config.resource.default
-        ani_dirname = str(animation_id)
-        channel_dir = str(channel_id)
+        ani_dirname = allocate_filename(
+            request.name, [x.dirname for x in db.animations.values()])
+        channel_dir = allocate_filename(request.channel_name, [])
         os.makedirs(self.config.resource.dirs[resource_dir] +
                     "/" + ani_dirname + "/" + channel_dir, exist_ok=True)
 
