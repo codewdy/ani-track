@@ -18,9 +18,11 @@
 
 <script setup>
 import { ref, inject } from 'vue'
-import { NH2, NCard, NDropdown, NButton, NSpace } from 'naive-ui'
+import { NH2, NCard, NDropdown, NButton, NSpace, useMessage } from 'naive-ui'
 import { watch_status, all_watch_status } from '@/lib/schema'
+import axios from 'axios';
 
+const message = useMessage()
 const animations = inject('animations')
 
 const options = all_watch_status.map(status => ({
@@ -29,7 +31,9 @@ const options = all_watch_status.map(status => ({
 }));
 
 function set_status(animation_id, status) {
-  // TODO: Send request to server
+  axios.post('/api/set_watch_status', { animation_id: animation_id, status: status }).catch(err => {
+    message.error("设置观看状态失败: " + err.message)
+  })
   animations.value.forEach(item => {
     if (item.animation_id == animation_id) {
       item.status = status

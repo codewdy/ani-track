@@ -11,6 +11,7 @@ __all__ = [
     "SearchBangumi",
     "SearchChannel",
     "UpdateAnimation",
+    "SetWatchStatus",
 ]
 
 
@@ -118,6 +119,15 @@ class SearchChannel:
     class SearchErrorInfo(BaseModel):
         source: str
         error: str
+
+
+class SetWatchStatus:
+    class Request(BaseModel):
+        animation_id: int
+        status: AnimationStatus
+
+    class Response(BaseModel):
+        pass
 
 
 class UpdateAnimation:

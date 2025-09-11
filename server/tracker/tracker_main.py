@@ -186,6 +186,12 @@ class Tracker(SimpleService):
             ))
         return response
 
+    @SimpleService.api
+    async def set_watch_status(self, request: SetWatchStatus.Request) -> SetWatchStatus.Response:
+        db = self.db_manager.db
+        db.animations[request.animation_id].status = request.status
+        return SetWatchStatus.Response()
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
