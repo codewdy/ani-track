@@ -12,7 +12,6 @@ import { ref, h, computed, inject } from 'vue'
 import { CaretDownOutline, LayersOutline, SettingsOutline, HomeOutline, CaretForwardCircleOutline, ArrowDownCircleOutline } from '@vicons/ionicons5'
 
 import { RouterLink, useRoute } from 'vue-router'
-import { animeState } from '@/common_state.js'
 
 const route = useRoute()
 const animations = inject('animations')
@@ -51,7 +50,6 @@ function expandIcon() {
 function value() {
     return route.path
 }
-// https://lain.bgm.tv/r/400/pic/cover/l/7f/1c/526973_zE0vy.jpg
 </script>
 
 <style scoped></style>

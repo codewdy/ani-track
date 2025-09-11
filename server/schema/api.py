@@ -6,7 +6,7 @@ from typing import List, Optional
 __all__ = [
     "AddAnimation",
     "GetAnimations",
-    "GetAnimation",
+    "GetAnimationInfo",
     "GetDownloadManagerStatus",
     "SearchBangumi",
     "SearchChannel",
@@ -49,12 +49,15 @@ class GetAnimations:
         animations: List['GetAnimations.AnimationInfo']
 
 
-class GetAnimation:
+class GetAnimationInfo:
     class EpisodeInfo(BaseModel):
         name: str
         url: str
 
-    class AnimationInfo(BaseModel):
+    class Request(BaseModel):
+        animation_id: int
+
+    class Response(BaseModel):
         animation_id: int
         name: str
         bangumi_id: str
@@ -62,13 +65,7 @@ class GetAnimation:
         status: AnimationStatus
         watched_episode: int
         watched_episode_time: int
-        episodes: List['GetAnimation.EpisodeInfo']
-
-    class Request(BaseModel):
-        animation_id: int
-
-    class Response(BaseModel):
-        animation: 'GetAnimation.AnimationInfo'
+        episodes: List['GetAnimationInfo.EpisodeInfo']
 
 
 class GetDownloadManagerStatus:

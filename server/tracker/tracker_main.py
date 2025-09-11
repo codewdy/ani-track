@@ -109,28 +109,6 @@ class Tracker(SimpleService):
         return GetAnimations.Response(is_new=True, version=self.db_manager.version, animations=animations)
 
     @SimpleService.api
-    async def get_animation(self, request: GetAnimation.Request) -> GetAnimation.Response:
-        db = self.db_manager.db
-        animation = db.animations[request.animation_id]
-        episodes = []
-        for ep_index, ep in enumerate(animation.channels[animation.current_channel].episodes):
-            episodes.append(GetAnimation.EpisodeInfo(
-                name=ep.name,
-                url=str(self.path_manager.episode_web_path(
-                    db, animation.animation_id, animation.current_channel, ep_index)),
-            ))
-        return GetAnimation.Response(animation=GetAnimation.AnimationInfo(
-            animation_id=animation.animation_id,
-            name=animation.name,
-            bangumi_id=animation.bangumi_id,
-            icon_url=animation.icon_url,
-            status=animation.status,
-            watched_episode=animation.watched_episode,
-            watched_episode_time=animation.watched_episode_time,
-            episodes=episodes,
-        ))
-
-    @SimpleService.api
     async def get_download_manager_status(self, request: GetDownloadManagerStatus.Request) -> GetDownloadManagerStatus.Response:
         status = self.updater.download_manager.get_status()
         return GetDownloadManagerStatus.Response(
@@ -194,6 +172,28 @@ class Tracker(SimpleService):
         db.animations[request.animation_id].status = request.status
         return SetWatchStatus.Response()
 
+    @SimpleService.api
+    async def get_animation_info(self, request: GetAnimationInfo.Request) -> GetAnimationInfo.Response:
+        db = self.db_manager.db
+        animation = db.animations[request.animation_id]
+        episodes = []
+        for ep_index, ep in enumerate(animation.channels[animation.current_channel].episodes):
+            episodes.append(GetAnimationInfo.EpisodeInfo(
+                name=ep.name,
+                url=str(self.path_manager.episode_web_path(
+                    db, animation.animation_id, animation.current_channel, ep_index)),
+            ))
+        return GetAnimationInfo.Response(
+            animation_id=animation.animation_id,
+            name=animation.name,
+            bangumi_id=animation.bangumi_id,
+            icon_url=animation.icon_url,
+            status=animation.status,
+            watched_episode=animation.watched_episode,
+            watched_episode_time=animation.watched_episode_time,
+            episodes=episodes,
+        )
+
 
 if __name__ == "__main__":
     config = Config.model_validate_json(open("config.json").read())
@@ -238,5 +238,12 @@ if __name__ == "__main__":
         async with tracker:
             req = SearchChannel.Request(keyword="碧蓝之海")
             return await tracker.search_channel(req)
+
+    async def test5():
+        tracker = Tracker(config)
+        async with tracker:
+            req = GetAnimationInfo.Request(animation_id=1)
+            return await tracker.get_animation_info(req)
+
     open("result.json", "w").write(
-        asyncio.run(test2()).model_dump_json(indent=2))
+        asyncio.run(test5()).model_dump_json(indent=2))

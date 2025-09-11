@@ -1,22 +1,28 @@
 <template>
     <n-space vertical>
-        <VideoPlayer url="https://vjs.zencdn.net/v/oceans.mp4" />
-        <n-button @click="changeAnime">切换动画</n-button>
+        <VideoPlayer v-if="url" :url="url" />
     </n-space>
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
 import VideoPlayer from './VideoPlayer.vue';
-import { animeState } from '@/common_state.js'
 import { NButton, NSpace } from 'naive-ui';
+import axios from 'axios';
+import { useRoute } from 'vue-router';
 
-function changeAnime() {
-    animeState.anime.push(animeState.anime[0]);
+const url = ref("")
+const route = useRoute()
 
-}
+onMounted(() => {
+    axios.post('/api/get_animation_info', {
+        animation_id: route.params.id
+    }).then(res => {
+        console.log(res.data)
+        url.value = res.data.episodes[0].url
+    })
+})
 
-
-let player = null;
 </script>
 
 <style scoped></style>
