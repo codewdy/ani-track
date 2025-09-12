@@ -28,7 +28,7 @@ onMounted(() => {
     reload()
     timer = setInterval(() => {
         reload()
-    }, 60000)
+    }, 10000)
 })
 
 onUnmounted(() => {
