@@ -11,6 +11,7 @@ from downloader.download_task import DownloadTask
 from tracker.path_manager import PathManager
 from functools import partial
 from utils.filename_allocate import allocate_filename
+import traceback
 
 
 class Updater:
@@ -43,7 +44,11 @@ class Updater:
         db = self.db_manager.db
         for animation in db.animations.values():
             channel_id = animation.current_channel
-            await self.update(animation.animation_id, channel_id)
+            try:
+                await self.update(animation.animation_id, channel_id)
+            except Exception as e:
+                print("Update failed: ", animation.animation_id,
+                      channel_id, traceback.format_exc())
 
     def download_done(self, animation_id, channel_id, episode_id):
         db = self.db_manager.db
