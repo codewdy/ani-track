@@ -35,10 +35,6 @@ watch(() => [url, time], ([newUrl, newTime]) => {
 })
 
 onMounted(() => {
-    console.log(localStorage.getItem('video_player_volume'))
-    console.log(parseFloat(localStorage.getItem('video_player_volume') || '0.6'))
-    console.log(localStorage.getItem('video_player_muted'))
-    console.log(localStorage.getItem('video_player_muted') === 'true')
     player = new XGPlayer({
         el: videoRef.value,
         url: url,
@@ -74,7 +70,6 @@ onMounted(() => {
         }
     })
     player.on(Events.VOLUME_CHANGE, (volume) => {
-        console.log(player.muted)
         localStorage.setItem('video_player_volume', player.volume)
         localStorage.setItem('video_player_muted', player.muted)
     })
