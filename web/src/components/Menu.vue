@@ -33,7 +33,7 @@ function createAnimeItem(item) {
 }
 
 const menuOptions = computed(() => [
-    createItem('/wdy', () => '动画列表', HomeOutline),
+    createItem('/anime-list', '动画列表', HomeOutline),
     createItem('/add-anime', '添加动画', SettingsOutline),
     createItem('/download', '下载进度', ArrowDownCircleOutline),
     {

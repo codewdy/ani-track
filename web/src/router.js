@@ -8,11 +8,11 @@ import AnimeView from './components/AnimeView/AnimeView.vue';
 const routes = [
   {
     path: '/',
-    redirect: '/wdy',
+    redirect: '/anime-list',
   },
   {
-    path: '/wdy',
-    name: 'wdy',
+    path: '/anime-list',
+    name: 'anime-list',
     component: AnimeList,
   },
   {
