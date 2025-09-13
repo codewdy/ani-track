@@ -31,7 +31,7 @@ const selected_value = ref(null)
 const loading = ref(false)
 
 function search_channel() {
-    const messageReactive = message.loading("搜索中(大概需要一分钟)", {
+    const messageReactive = message.loading("搜索中(大概需要5秒)", {
         duration: 0
     });
     search_result.value = []
