@@ -10,7 +10,7 @@ class SearchFunctor:
 
     async def __call__(self, searcher):
         try:
-            return await asyncio.wait_for(searcher.search(self.keyword), timeout=60), []
+            return await asyncio.wait_for(searcher.search(self.keyword), timeout=5), []
 
         except Exception as e:
             return [], [
