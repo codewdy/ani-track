@@ -1,8 +1,9 @@
 from aiohttp import web
 from tracker.tracker_main import Tracker
 from schema.config import Config
+import sys
 
-config = Config.model_validate_json(open("config.json").read())
+config = Config.model_validate_json(open(sys.argv[-1]).read())
 tracker = Tracker(config)
 
 
@@ -23,4 +24,4 @@ async def make_app():
 
 
 if __name__ == "__main__":
-    web.run_app(make_app(), port=5373)
+    web.run_app(make_app(), port=config.service.api_port)
