@@ -10,6 +10,7 @@
 import XGPlayer, { Events } from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
 import { watch, onMounted, ref, defineProps, defineEmits, defineModel } from 'vue';
+import { collapseTransitionRtl } from 'naive-ui/es/collapse-transition/styles';
 
 const { url = '', width = 800, time = 0 } = defineProps(['url', 'width', 'time'])
 const current_time = defineModel('current_time', { default: 0 })
@@ -34,6 +35,10 @@ watch(() => [url, time], ([newUrl, newTime]) => {
 })
 
 onMounted(() => {
+    console.log(localStorage.getItem('video_player_volume'))
+    console.log(parseFloat(localStorage.getItem('video_player_volume') || '0.6'))
+    console.log(localStorage.getItem('video_player_muted'))
+    console.log(localStorage.getItem('video_player_muted') === 'true')
     player = new XGPlayer({
         el: videoRef.value,
         url: url,
@@ -45,8 +50,11 @@ onMounted(() => {
         screenShot: true, //显示截图按钮
         videoAttributes: {
             crossOrigin: 'anonymous'
-        }
+        },
+        volume: parseFloat(localStorage.getItem('video_player_volume') || '0.6'),
     });
+    player.muted = localStorage.getItem('video_player_muted') === 'true'
+
     player.on(Events.TIME_UPDATE, () => {
         current_time.value = player.currentTime
     })
@@ -64,6 +72,11 @@ onMounted(() => {
         if (url !== '') {
             emit('done')
         }
+    })
+    player.on(Events.VOLUME_CHANGE, (volume) => {
+        console.log(player.muted)
+        localStorage.setItem('video_player_volume', player.volume)
+        localStorage.setItem('video_player_muted', player.muted)
     })
 })
 </script>
