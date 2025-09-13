@@ -39,6 +39,13 @@ onMounted(() => {
         url: url,
         fluid: true,
         startTime: time,
+        playnext: {
+            urlList: ["http://"]
+        },
+        screenShot: true, //显示截图按钮
+        videoAttributes: {
+            crossOrigin: 'anonymous'
+        }
     });
     player.on(Events.TIME_UPDATE, () => {
         current_time.value = player.currentTime
@@ -49,6 +56,11 @@ onMounted(() => {
         }
     })
     player.on(Events.ENDED, () => {
+        if (url !== '') {
+            emit('done')
+        }
+    })
+    player.on(Events.PLAYNEXT, () => {
         if (url !== '') {
             emit('done')
         }
