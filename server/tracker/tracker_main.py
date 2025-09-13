@@ -170,6 +170,7 @@ class Tracker(SimpleService):
     async def set_watch_status(self, request: SetWatchStatus.Request) -> SetWatchStatus.Response:
         db = self.db_manager.db
         db.animations[request.animation_id].status = request.status
+        self.db_manager.mark_dirty()
         return SetWatchStatus.Response()
 
     @SimpleService.api
@@ -193,6 +194,15 @@ class Tracker(SimpleService):
             watched_episode_time=animation.watched_episode_time,
             episodes=episodes,
         )
+
+    @SimpleService.api
+    async def set_watched_time(self, request: SetWatchedTime.Request) -> SetWatchedTime.Response:
+        db = self.db_manager.db
+        animation = db.animations[request.animation_id]
+        animation.watched_episode = request.watched_episode
+        animation.watched_episode_time = request.watched_episode_time
+        self.db_manager.mark_dirty()
+        return SetWatchedTime.Response()
 
 
 if __name__ == "__main__":

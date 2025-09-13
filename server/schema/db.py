@@ -50,7 +50,7 @@ class Animation(BaseModel):
     next_channel_id: int
     current_channel: int
     watched_episode: int = 0
-    watched_episode_time: int = 0
+    watched_episode_time: float = 0
     watched_episode_time_percent: float = 0
 
 

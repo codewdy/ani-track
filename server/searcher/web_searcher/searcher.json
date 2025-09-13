@@ -3,9 +3,9 @@
         {
             "key": "girigirilove",
             "name": "girigiri愛動漫",
-            "iconUrl": "https://anime.girigirilove.com/upload/site/20231121-1/fdd2694db66628a9deadd86e50aedd43.png",
+            "iconUrl": "http://anime.girigirilove.com/upload/site/20231121-1/fdd2694db66628a9deadd86e50aedd43.png",
             "searchConfig": {
-                "searchUrl": "https://anime.girigirilove.com/search/-------------/?wd={keyword}",
+                "searchUrl": "http://anime.girigirilove.com/search/-------------/?wd={keyword}",
                 "subjectFormatId": "indexed",
                 "selectorSubjectFormatIndexed": {
                     "selectNames": "body > .box-width .search-box .thumb-content > .thumb-txt",

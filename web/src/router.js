@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AnimeView from '@/components/AnimeView/AnimeView.vue';
 import NotFound from '@/components/NotFound.vue';
 import AnimeList from '@/components/AnimeList/AnimeList.vue';
 import AddAnimeContainer from '@/components/AddAnime/AddAnimeContainer.vue';
 import DownloadStatus from '@/components/DownloadStatus/DownloadStatus.vue';
+import AnimeView from './components/AnimeView/AnimeView.vue';
 
 const routes = [
   {
@@ -21,7 +21,7 @@ const routes = [
     component: DownloadStatus,
   },
   {
-    path: '/anime-view/:id',
+    path: '/anime-view/:animation_id',
     name: 'anime-view',
     component: AnimeView,
   },

@@ -10,8 +10,8 @@ __all__ = [
     "GetDownloadManagerStatus",
     "SearchBangumi",
     "SearchChannel",
-    "UpdateAnimation",
     "SetWatchStatus",
+    "SetWatchedTime",
 ]
 
 
@@ -64,7 +64,7 @@ class GetAnimationInfo:
         icon_url: str
         status: AnimationStatus
         watched_episode: int
-        watched_episode_time: int
+        watched_episode_time: float
         episodes: List['GetAnimationInfo.EpisodeInfo']
 
 
@@ -127,12 +127,11 @@ class SetWatchStatus:
         pass
 
 
-class UpdateAnimation:
+class SetWatchedTime:
     class Request(BaseModel):
         animation_id: int
-        status: Optional[AnimationStatus] = None
-        watched_episode: Optional[int] = None
-        watched_episode_time: Optional[int] = None
+        watched_episode: int
+        watched_episode_time: float
 
     class Response(BaseModel):
         pass
