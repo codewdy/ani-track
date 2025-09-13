@@ -2,7 +2,9 @@
   <n-space>
     <n-card v-for="item in animations">
       <template #cover>
-        <img :src="item.icon_url" class="card-cover">
+        <a :href="'/anime-view/' + item.animation_id">
+          <img :src="item.icon_url" class="card-cover">
+        </a>
       </template>
       <n-h2 class="card-name">
         <a :href="'/anime-view/' + item.animation_id">{{ item.name }}</a>
